@@ -7,12 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -68,7 +64,6 @@ public class Startup extends Application
 	private static Player mPlayer;
 	private static EventHandler<KeyEvent> mKeyListener;
 	private static SceneType mLastSceneType, mCurrSceneType;
-	private static Deque<SceneType> mSceneStack;
 
 	private static Scene mAnatureSummaryView;
 	private static AnatureSummaryController mAnatureSummaryController;
@@ -129,7 +124,6 @@ public class Startup extends Application
 
 		mLastSceneType = SceneType.Intro;
 		mCurrSceneType = SceneType.Intro;
-		mSceneStack = new ArrayDeque<SceneType>();
 		changeScene(SceneType.Intro, null);
 		mStage.show();
 	}
@@ -143,6 +137,7 @@ public class Startup extends Application
 	{
 		double width = mStage.getWidth();
 		double height = mStage.getHeight();
+		boolean canSwitchBackTo = true;
 
 		if(type == null)
 		{
@@ -163,6 +158,7 @@ public class Startup extends Application
 
 					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Intro");
 					mStage.setScene(intro);
+					canSwitchBackTo = false;
 					break;
 
 				case Anature_Summary:
@@ -181,6 +177,7 @@ public class Startup extends Application
 
 					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Anature Summary");
 					mStage.setScene(mAnatureSummaryView);
+					canSwitchBackTo = false;
 					break;
 
 				case Evolution:
@@ -194,6 +191,7 @@ public class Startup extends Application
 
 					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Evolution Page");
 					mStage.setScene(evolutionView);
+					canSwitchBackTo = false;
 					break;
 
 				case Starter_Town:
@@ -322,8 +320,11 @@ public class Startup extends Application
 					break;
 			}
 
-			mLastSceneType = mCurrSceneType;
-			mCurrSceneType = type;
+			if(canSwitchBackTo)
+			{
+				mLastSceneType = mCurrSceneType;
+				mCurrSceneType = type;
+			}
 		}
 
 		catch(IOException e)
@@ -371,39 +372,26 @@ public class Startup extends Application
 	{
 		if(result.hasEvolutions())
 		{
-			HashMap<IAnature, Species> anaturesToEvolve = result.getAnaturesToEvolve();
+			Entry<IAnature, Species> evolveEntry = result.popEvolvedAnature();
 
-			Iterator<Entry<IAnature, Species>> evolveIterator = anaturesToEvolve.entrySet().iterator();
-			while(evolveIterator.hasNext())
+			changeScene(SceneType.Evolution, null);
+			mEvolutionController.startEvolution(mPlayer.getAnatures(), evolveEntry.getKey(), evolveEntry.getValue(), () -> 
 			{
-				Entry<IAnature, Species> evolveEntry = evolveIterator.next();
-
-				if(evolveIterator.hasNext())
+				if(result.hasEvolutions())
 				{
-					mSceneStack.push(SceneType.Evolution);
+					endBattle(result);
 				}
-
-				changeScene(SceneType.Evolution, null);
-				mEvolutionController.startEvolution(mPlayer.getAnatures(), evolveEntry.getKey(), evolveEntry.getValue(), () -> nextScene());
-			}
+				
+				else
+				{
+					changeScene(null, null);
+				}
+			});
 		}
 
 		else
 		{
 			changeScene(null, null);
-		}
-	}
-
-	private static void nextScene()
-	{
-		if(mSceneStack.size() < 1)
-		{
-			changeScene(null, null);
-		}
-
-		else
-		{
-			changeScene(mSceneStack.pop(), null);
 		}
 	}
 
