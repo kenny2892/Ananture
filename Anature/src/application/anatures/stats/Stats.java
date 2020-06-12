@@ -145,7 +145,8 @@ class Stats extends StatsBase implements IStats
 		int spDef = getTotalStat(Stat.SpecialDefense);
 		int spd = getTotalStat(Stat.Speed);
 
-		int[] stats = { hp, atk, def, spAtk, spDef, spd };
+		int[] stats =
+		{ hp, atk, def, spAtk, spDef, spd };
 		Arrays.sort(stats);
 
 		int lastIndex = stats.length - 1;
@@ -374,8 +375,7 @@ class Stats extends StatsBase implements IStats
 	{
 		checkEvRoadmap();
 
-		int hitPointsIncrease = (int) ((0.01 * getBaseStat(Stat.HitPoints))
-				+ (0.02 * ((double) getIvStat(Stat.HitPoints) + (double) getEvStat(Stat.HitPoints))));
+		int hitPointsIncrease = (int) ((0.01 * getBaseStat(Stat.HitPoints)) + (0.02 * ((double) getIvStat(Stat.HitPoints) + (double) getEvStat(Stat.HitPoints))));
 		hitPointsIncrease = hitPointsIncrease == 0 ? 1 : hitPointsIncrease;
 		addLevelHitPoints(hitPointsIncrease);
 		maintainHitPointPercentage(hitPointsIncrease);
@@ -388,13 +388,11 @@ class Stats extends StatsBase implements IStats
 		defenseIncrease = defenseIncrease == 0 ? 1 : defenseIncrease;
 		addLevelDefnse(defenseIncrease);
 
-		int specialAttackIncrease = (int) ((0.01 * getBaseStat(Stat.SpecialAttack))
-				+ (0.02 * ((double) getIvStat(Stat.SpecialAttack) + (double) getEvStat(Stat.SpecialAttack))));
+		int specialAttackIncrease = (int) ((0.01 * getBaseStat(Stat.SpecialAttack)) + (0.02 * ((double) getIvStat(Stat.SpecialAttack) + (double) getEvStat(Stat.SpecialAttack))));
 		specialAttackIncrease = specialAttackIncrease == 0 ? 1 : specialAttackIncrease;
 		addLevelSpecialAttack(specialAttackIncrease);
 
-		int specialDefenseIncrease = (int) ((0.01 * getBaseStat(Stat.SpecialDefense))
-				+ (0.02 * ((double) getIvStat(Stat.SpecialDefense) + (double) getEvStat(Stat.SpecialDefense))));
+		int specialDefenseIncrease = (int) ((0.01 * getBaseStat(Stat.SpecialDefense)) + (0.02 * ((double) getIvStat(Stat.SpecialDefense) + (double) getEvStat(Stat.SpecialDefense))));
 		specialDefenseIncrease = specialDefenseIncrease == 0 ? 1 : specialDefenseIncrease;
 		addLevelSpecialDefense(specialDefenseIncrease);
 

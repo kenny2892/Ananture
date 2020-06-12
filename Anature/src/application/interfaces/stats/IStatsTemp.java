@@ -1,5 +1,6 @@
 package application.interfaces.stats;
 
+import application.enums.Stat;
 import application.enums.TempStatsStages;
 
 public interface IStatsTemp
@@ -28,32 +29,8 @@ public interface IStatsTemp
 
 	public void resetTempStats();
 
-	public void increaseTempAttack();
+	public boolean increaseTempStat(Stat stat);
 
-	public void decreaseTempAttack();
-
-	public void increaseTempDefense();
-
-	public void decreaseTempDefense();
-
-	public void increaseTempSpecialAttack();
-
-	public void decreaseTempSpecialAttack();
-
-	public void increaseTempSpecialDefense();
-
-	public void decreaseTempSpecialDefense();
-
-	public void increaseTempSpeed();
-
-	public void decreaseTempSpeed();
-
-	public void increaseTempAccuracy();
-
-	public void decreaseTempAccuracy();
-
-	public void increaseTempEvasion();
-
-	public void decreaseTempEvaion();
+	public boolean decreaseTempStat(Stat stat);
 
 }
