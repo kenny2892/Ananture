@@ -9,22 +9,11 @@ import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import application.anatures.AnatureBuilder;
-import application.controllers.BattleController;
-import application.controllers.IntroController;
 import application.controllers.LoggerController;
-import application.controllers.menus.AnatureSummaryController;
-import application.controllers.menus.EvolutionController;
-import application.controllers.overworld_cells.AbstractController;
-import application.controllers.overworld_cells.GrassTownController;
-import application.controllers.overworld_cells.PathOneController;
-import application.controllers.overworld_cells.RestStationController;
-import application.controllers.overworld_cells.StarterTownController;
 import application.controllers.results.BattleResult;
-import application.enums.Direction;
 import application.enums.ItemIds;
 import application.enums.LoggingTypes;
 import application.enums.SceneType;
@@ -33,77 +22,28 @@ import application.enums.WarpPoints;
 import application.interfaces.IAnature;
 import application.interfaces.ITrainer;
 import application.items.Anacube;
-import application.models.PathOneModel;
-import application.models.StarterTownModel;
 import application.player.Player;
 import application.pools.ItemPool;
-import application.views.overworld_cells.AbstractCell;
-import application.views.overworld_cells.GrassTownCell;
-import application.views.overworld_cells.PathOneCell;
-import application.views.overworld_cells.RestStationCell;
-import application.views.overworld_cells.StarterTownCell;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class Startup extends Application
 {
-	private static LoggerStartUp mLogger;
-	private static Stage mStage, mLoggerStage;
+	private static Stage mStage;
 	private static Player mPlayer;
-	private static EventHandler<KeyEvent> mKeyListener;
-	private static SceneType mLastSceneType, mCurrSceneType;
-
-	private static Scene mAnatureSummaryView;
-	private static AnatureSummaryController mAnatureSummaryController;
-
-	private static EvolutionController mEvolutionController;
-
-	private static StarterTownModel mStarterTownModel;
-	private static StarterTownCell mStarterTownView;
-	private static StarterTownController mStarterTownController;
-
-	private static PathOneModel mPathOneModel;
-	private static PathOneCell mPathOneView;
-	private static PathOneController mPathOneController;
-
-//	private static GrassTownModel mGrassTownModel;
-	private static GrassTownCell mGrassTownView;
-	private static GrassTownController mGrassTownController;
-
-//	private static RestStationModel mRestStationGrassModel;
-	private static RestStationCell mRestStationGrassView;
-	private static RestStationController mRestStationGrassController;
-
-	private static AbstractCell mCurrentCell;
-	private static AbstractController mCurrentController;
+	private static SceneManager mSceneManager;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
 		mPlayer = new Player(null);
-		mKeyListener = new EventHandler<KeyEvent>()
-		{
-			@Override
-			public void handle(KeyEvent event)
-			{
-				if(event.getText().compareTo("`") == 0)
-				{
-					mLogger.toggleWindow();
-				}
-			}
-		};
 
 		mStage = primaryStage;
 		mStage.getIcons().add(new Image(Startup.class.getResourceAsStream("/resources/images/Icon.png")));
@@ -115,15 +55,10 @@ public class Startup extends Application
 		mStage.setWidth(1280);
 		mStage.setHeight(720);
 
-		mLogger = new LoggerStartUp(mKeyListener);
-		mLogger.init();
-		mLoggerStage = new Stage();
-		mLogger.start(mLoggerStage);
 		mStage.setOnCloseRequest(event -> System.exit(-3000));
 		LoggerController.logEvent(LoggingTypes.Error, "The logger has started.");
 
-		mLastSceneType = SceneType.Intro;
-		mCurrSceneType = SceneType.Intro;
+		mSceneManager = new SceneManager(mStage);
 		changeScene(SceneType.Intro, null);
 		mStage.show();
 	}
@@ -133,266 +68,19 @@ public class Startup extends Application
 		launch(args);
 	}
 
-	public static void changeScene(SceneType type, WarpPoints warpPoint)
+	public static void changeScene(SceneType id, WarpPoints warpPoint)
 	{
-		double width = mStage.getWidth();
-		double height = mStage.getHeight();
-		boolean canSwitchBackTo = true;
-
-		if(type == null)
-		{
-			type = mLastSceneType;
-		}
-
-		try
-		{
-			switch(type)
-			{
-				case Intro:
-					FXMLLoader introLoader = new FXMLLoader(Startup.class.getResource("/application/views/IntroView.fxml"));
-					Parent introRoot = introLoader.load();
-					Scene intro = new Scene(introRoot);
-
-					IntroController introController = introLoader.getController();
-					introController.updateBinds(intro, mKeyListener);
-
-					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Intro");
-					mStage.setScene(intro);
-					canSwitchBackTo = false;
-					break;
-
-				case Anature_Summary:
-					if(mAnatureSummaryView == null || mAnatureSummaryController == null)
-					{
-						FXMLLoader summaryLoader = new FXMLLoader(Startup.class.getResource("/application/views/AnatureSummaryView.fxml"));
-						Parent summaryRoot = summaryLoader.load();
-						mAnatureSummaryView = new Scene(summaryRoot);
-						mAnatureSummaryView.setOnKeyReleased(mKeyListener);
-
-						mAnatureSummaryController = summaryLoader.getController();
-						mAnatureSummaryController.updateBinds(mAnatureSummaryView);
-					}
-
-					mAnatureSummaryController.displayParty(mPlayer.getAnatures());
-
-					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Anature Summary");
-					mStage.setScene(mAnatureSummaryView);
-					canSwitchBackTo = false;
-					break;
-
-				case Evolution:
-					FXMLLoader evolutionLoader = new FXMLLoader(Startup.class.getResource("/application/views/EvolutionView.fxml"));
-					Parent evolutionRoot = evolutionLoader.load();
-					Scene evolutionView = new Scene(evolutionRoot);
-					evolutionView.setOnKeyReleased(mKeyListener);
-
-					mEvolutionController = evolutionLoader.getController();
-					mEvolutionController.updateBinds(evolutionView);
-
-					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Evolution Page");
-					mStage.setScene(evolutionView);
-					canSwitchBackTo = false;
-					break;
-
-				case Starter_Town:
-					if(mStarterTownModel == null)
-					{
-						mStarterTownModel = new StarterTownModel();
-					}
-
-					if(mStarterTownView == null)
-					{
-						mStarterTownView = new StarterTownCell(mLogger);
-					}
-
-					if(mStarterTownController == null)
-					{
-						mStarterTownController = new StarterTownController(mLogger, mStarterTownView, mStarterTownModel, mPlayer);
-					}
-
-					Scene townScene = mStarterTownView.getScene();
-
-					if(mCurrentCell != null)
-					{
-						mStarterTownView.setKeysPressed(mCurrentCell.getKeysPressed());
-					}
-
-					mStarterTownController.movePlayer(warpPoint);
-					mCurrentCell = mStarterTownView;
-					mCurrentController = mStarterTownController;
-
-					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Starter Town");
-					mStage.setScene(townScene);
-					break;
-
-				case Path_1:
-					if(mPathOneModel == null)
-					{
-						mPathOneModel = new PathOneModel();
-					}
-
-					if(mPathOneView == null)
-					{
-						mPathOneView = new PathOneCell(mLogger);
-					}
-
-					if(mPathOneController == null)
-					{
-						mPathOneController = new PathOneController(mLogger, mPathOneView, mPathOneModel, mPlayer);
-					}
-
-					Scene pathOneScene = mPathOneView.getScene();
-
-					if(mCurrentCell != null)
-					{
-						mPathOneView.setKeysPressed(mCurrentCell.getKeysPressed());
-					}
-
-					mPathOneController.movePlayer(warpPoint);
-					mCurrentCell = mPathOneView;
-					mCurrentController = mPathOneController;
-
-					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Path 1");
-					mStage.setScene(pathOneScene);
-					break;
-
-				case Grass_Town:
-//					if(mGrassTownModel == null)
-//					{
-//						mGrassTownModel = new StarterTownModel();
-//					}
-
-					if(mGrassTownView == null)
-					{
-						mGrassTownView = new GrassTownCell(mLogger);
-					}
-
-					if(mGrassTownController == null)
-					{
-						mGrassTownController = new GrassTownController(mLogger, mGrassTownView, mPlayer);
-					}
-
-					if(mCurrentCell != null)
-					{
-						mGrassTownView.setKeysPressed(mCurrentCell.getKeysPressed());
-					}
-
-					Scene grassTownScene = mGrassTownView.getScene();
-					mGrassTownController.movePlayer(warpPoint);
-					mCurrentCell = mGrassTownView;
-					mCurrentController = mGrassTownController;
-
-					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Grass Town");
-					mStage.setScene(grassTownScene);
-					break;
-
-				case Rest_Station_Grass_Town:
-//					if(mRestStationGrassModel == null)
-//					{
-//						mRestStationGrassModel = new RestStationModel();
-//					}
-
-					if(mRestStationGrassView == null)
-					{
-						mRestStationGrassView = new RestStationCell(mLogger, SceneType.Rest_Station_Grass_Town);
-					}
-
-					if(mRestStationGrassController == null)
-					{
-						mRestStationGrassController = new RestStationController(mLogger, mRestStationGrassView, mPlayer);
-					}
-
-					if(mCurrentCell != null)
-					{
-						mRestStationGrassView.setKeysPressed(mCurrentCell.getKeysPressed());
-					}
-
-					Scene restStationScene = mRestStationGrassView.getScene();
-					mRestStationGrassController.movePlayer(warpPoint);
-					mCurrentCell = mRestStationGrassView;
-					mCurrentController = mRestStationGrassController;
-
-					LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Rest Station in Grass Town");
-					mStage.setScene(restStationScene);
-					break;
-
-				default:
-					break;
-			}
-
-			if(canSwitchBackTo)
-			{
-				mLastSceneType = mCurrSceneType;
-				mCurrSceneType = type;
-			}
-		}
-
-		catch(IOException e)
-		{
-			e.printStackTrace();
-			return;
-		}
-
-		mStage.setWidth(width);
-		mStage.setHeight(height);
+		mSceneManager.changeScene(id, warpPoint, mPlayer);
 	}
 
 	public static void startBattle(ITrainer toBattle)
 	{
-		try
-		{
-			double width = mStage.getWidth();
-			double height = mStage.getHeight();
-
-			FXMLLoader loader = new FXMLLoader(Startup.class.getResource("/application/views/BattleView.fxml"));
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			scene.setOnKeyReleased(mKeyListener);
-
-			BattleController controller = (BattleController) loader.getController();
-			controller.setUpBindingsAndElements(scene);
-			controller.updateElements(mPlayer, toBattle);
-
-			mLastSceneType = mCurrSceneType;
-
-			LoggerController.logEvent(LoggingTypes.Misc, "Changing Scene to Battle");
-			mStage.setScene(scene);
-
-			mStage.setWidth(width);
-			mStage.setHeight(height);
-		}
-
-		catch(IOException e)
-		{
-			LoggerController.logEvent(LoggingTypes.Error, "Exception when starting battle. \n" + e.getMessage());
-		}
+		mSceneManager.loadBattle(mPlayer, toBattle);
 	}
 
 	public static void endBattle(BattleResult result)
 	{
-		if(result.hasEvolutions())
-		{
-			Entry<IAnature, Species> evolveEntry = result.popEvolvedAnature();
-
-			changeScene(SceneType.Evolution, null);
-			mEvolutionController.startEvolution(mPlayer.getAnatures(), evolveEntry.getKey(), evolveEntry.getValue(), () -> 
-			{
-				if(result.hasEvolutions())
-				{
-					endBattle(result);
-				}
-				
-				else
-				{
-					changeScene(null, null);
-				}
-			});
-		}
-
-		else
-		{
-			changeScene(null, null);
-		}
+		mSceneManager.unloadBattle(result, mPlayer);
 	}
 
 	public static void createDemo()
@@ -408,6 +96,10 @@ public class Startup extends Application
 
 		IAnature third = AnatureBuilder.createAnature(Species.Sardino, 14);
 		mPlayer.addAnatures(third);
+		mPlayer.getAnatures().get(2).getStats().addExperience(630);
+
+		IAnature fourth = AnatureBuilder.createAnature(Species.Modenine, 16);
+		mPlayer.addAnatures(fourth);
 		mPlayer.getAnatures().get(2).getStats().addExperience(630);
 
 		mPlayer.getBackpack().addItem(ItemPool.getHealthPotion(ItemIds.Potion));
@@ -457,89 +149,64 @@ public class Startup extends Application
 				mPlayer = (Player) object;
 			}
 		},
-		StarterTownModel
+
+		Models
 		{
 			@Override
 			public Object getItem()
 			{
-				return mStarterTownModel;
+				return mSceneManager.getModels();
 			}
 
 			@Override
 			public void setItem(Object object)
 			{
-				mStarterTownModel = (StarterTownModel) object;
+				mSceneManager.setModels(object);
 			}
 		},
-		PathOneModel
-		{
-			@Override
-			public Object getItem()
-			{
-				return mPathOneModel;
-			}
 
-			@Override
-			public void setItem(Object object)
-			{
-				mPathOneModel = (PathOneModel) object;
-			}
-		},
 		CurrentSceneType
 		{
 			@Override
 			public Object getItem()
 			{
-				return mCurrSceneType;
+				return mSceneManager.getCurrSceneType();
 			}
 
 			@Override
 			public void setItem(Object object)
 			{
-				mCurrSceneType = (SceneType) object;
-				changeScene(mCurrSceneType, null);
+				mSceneManager.setCurrSceneType(object, mPlayer);
 			}
 		},
+
 		CurrentPlayerDirection
 		{
 			@Override
 			public Object getItem()
 			{
-				return mCurrentCell.getPlayerFacing();
+				return mSceneManager.getPlayerFacing();
 			}
 
 			@Override
 			public void setItem(Object object)
 			{
-				mCurrentCell.setPlayerFacing((Direction) object);
+				mSceneManager.setPlayerFacing(object);
 			}
 		},
-		CurrentPlayerXCoordinate
+
+		CurrentPlayerCoordinates
 		{
 			@Override
 			public Object getItem()
 			{
-				return mCurrentCell.getPlayer().getX();
+				return mSceneManager.getCoordinates();
 			}
 
 			@Override
 			public void setItem(Object object)
 			{
-				mCurrentCell.getPlayer().setX((double) object);
-			}
-		},
-		CurrentPlayerYCoordinate
-		{
-			@Override
-			public Object getItem()
-			{
-				return mCurrentCell.getPlayer().getY();
-			}
-
-			@Override
-			public void setItem(Object object)
-			{
-				mCurrentCell.getPlayer().setY((double) object);
+				mSceneManager.setCoordinates(object);
 			}
 		}
 	}
@@ -577,10 +244,7 @@ public class Startup extends Application
 			}
 		}
 
-		if(mCurrentController != null)
-		{
-			mCurrentController.saveLoadUpdates();
-		}
+		mSceneManager.saveAndLoadUpdates();
 
 		return result;
 	}
@@ -614,7 +278,7 @@ public class Startup extends Application
 
 		if(showConfirmation && !showLoadConfirmation())
 		{
-			mCurrentController.saveLoadUpdates();
+			mSceneManager.saveAndLoadUpdates();
 			return result;
 		}
 
@@ -628,10 +292,7 @@ public class Startup extends Application
 			FileInputStream fileInStream;
 			ObjectInputStream in;
 
-			if(mCurrentController != null)
-			{
-				mCurrentController.saveLoadUpdates();
-			}
+			mSceneManager.saveAndLoadUpdates();
 
 			try
 			{
@@ -657,10 +318,7 @@ public class Startup extends Application
 			}
 		}
 
-		if(mCurrentController != null)
-		{
-			mCurrentController.saveLoadUpdates();
-		}
+		mSceneManager.saveAndLoadUpdates();
 
 		return result;
 	}
