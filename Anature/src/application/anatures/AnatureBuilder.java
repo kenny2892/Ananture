@@ -43,7 +43,7 @@ public class AnatureBuilder
 
 				try
 				{
-					Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureDatabase);
+					Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureStatsDatabase);
 
 					String query = "Select * from Anature Where SpeciesName=?";
 					PreparedStatement pst = connect.prepareStatement(query);
@@ -114,7 +114,7 @@ public class AnatureBuilder
 
 				try
 				{
-					Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureDatabase);
+					Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureStatsDatabase);
 
 					String query = "Select * from Anature Where SpeciesName=?";
 					PreparedStatement pst = connect.prepareStatement(query);
@@ -172,7 +172,7 @@ public class AnatureBuilder
 
 		try
 		{
-			Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureSpeciesDatabase);
+			Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureMovesDatabase);
 
 			String query = "Select * from " + species.toString() + "Species";
 			PreparedStatement pst = connect.prepareStatement(query);

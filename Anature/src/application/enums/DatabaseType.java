@@ -2,5 +2,5 @@ package application.enums;
 
 public enum DatabaseType
 {
-	AnatureDatabase, AnatureSpeciesDatabase, AnatureEvolutionDatabase, TrainerDatabase,
+	AnatureStatsDatabase, AnatureMovesDatabase, AnatureEvolutionsDatabase, TrainerDatabase,
 }
