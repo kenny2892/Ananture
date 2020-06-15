@@ -3,6 +3,7 @@ package application;
 import java.util.ArrayList;
 import java.util.Random;
 
+import application.anatures.Anature;
 import application.anatures.movesets.MoveSet;
 import application.controllers.results.AbilityResult;
 import application.controllers.results.ItemResult;
@@ -10,7 +11,6 @@ import application.controllers.results.MoveResult;
 import application.enums.AbilityIds;
 import application.enums.MoveIds;
 import application.enums.Stat;
-import application.interfaces.IAnature;
 import application.interfaces.IItem;
 import application.interfaces.IMove;
 import application.interfaces.ITrainer;
@@ -19,17 +19,17 @@ import application.trainers.ai.choice_objects.AiSwitchChoice;
 
 public class FightManager
 {
-	private ArrayList<IAnature> mPlayerTeam, mEnemyTeam, mPlayerParticipatingAnatures;
+	private ArrayList<Anature> mPlayerTeam, mEnemyTeam, mPlayerParticipatingAnatures;
 	private int mPlayerIndex, mEnemyIndex, mTurnCount;
 
-	public FightManager(ArrayList<IAnature> playerTeam, ArrayList<IAnature> enemyTeam)
+	public FightManager(ArrayList<Anature> playerTeam, ArrayList<Anature> enemyTeam)
 	{
 		if(playerTeam == null || enemyTeam == null)
 			throw new IllegalArgumentException("Passed in parameter was null.");
 
 		mPlayerTeam = playerTeam;
 		mEnemyTeam = enemyTeam;
-		mPlayerParticipatingAnatures = new ArrayList<IAnature>();
+		mPlayerParticipatingAnatures = new ArrayList<Anature>();
 
 		mPlayerIndex = 0;
 		addPlayerAnatureParticipant(0);
@@ -39,7 +39,7 @@ public class FightManager
 
 	public void applyDamage(boolean isPlayer, int damage)
 	{
-		ArrayList<IAnature> team = null;
+		ArrayList<Anature> team = null;
 		int index = 0;
 
 		if(isPlayer)
@@ -54,7 +54,7 @@ public class FightManager
 			index = mEnemyIndex;
 		}
 
-		IAnature selected = team.get(index);
+		Anature selected = team.get(index);
 		selected.applyDamage(damage);
 	}
 
@@ -65,8 +65,8 @@ public class FightManager
 
 	public MoveResult attack(boolean isPlayerAttacking, int indexOfMove)
 	{
-		IAnature userAnature = null;
-		IAnature targetAnature = null;
+		Anature userAnature = null;
+		Anature targetAnature = null;
 
 		if(isPlayerAttacking)
 		{
@@ -95,10 +95,8 @@ public class FightManager
 			move = MovePool.getMove(MoveIds.Flail);
 		}
 
-		AbilityIds userAbilityId = userAnature.getAbility()
-				.getAbilityId();
-		AbilityIds targetAbilityId = targetAnature.getAbility()
-				.getAbilityId();
+		AbilityIds userAbilityId = userAnature.getAbility().getAbilityId();
+		AbilityIds targetAbilityId = targetAnature.getAbility().getAbilityId();
 
 		moveSet.useMovePoint(indexOfMove);
 
@@ -141,7 +139,7 @@ public class FightManager
 		return new MoveResult(dialogue, afterTurn, indexOfMove, isPlayerAttacking, move);
 	}
 
-	private boolean landedAttack(IAnature userAnature, IMove move)
+	private boolean landedAttack(Anature userAnature, IMove move)
 	{
 		Random rng = new Random();
 		double anatureAccuracy = userAnature.getStats().getTotalStat(Stat.Accuracy);
@@ -157,7 +155,7 @@ public class FightManager
 	public ItemResult itemUse(boolean isPlayer, int indexOfTeam, IItem item)
 	{
 		mTurnCount++;
-		IAnature target;
+		Anature target;
 
 		if(isPlayer)
 		{
@@ -174,24 +172,22 @@ public class FightManager
 
 	public AbilityResult activateEntryAbility(boolean isPlayer)
 	{
-		IAnature player = getPlayerAnature();
-		IAnature enemy = getEnemyAnature();
+		Anature player = getPlayerAnature();
+		Anature enemy = getEnemyAnature();
 
 		if(isPlayer)
 		{
-			return AbilityActivation.useEntryAbility(player.getAbility()
-					.getAbilityId(), player, enemy);
+			return AbilityActivation.useEntryAbility(player.getAbility().getAbilityId(), player, enemy);
 		}
 
-		return AbilityActivation.useEntryAbility(enemy.getAbility()
-				.getAbilityId(), enemy, player);
+		return AbilityActivation.useEntryAbility(enemy.getAbility().getAbilityId(), enemy, player);
 	}
-	
+
 	public void switchTrainerAnature(ITrainer enemyTrainer)
 	{
 		AiSwitchChoice switchResult = enemyTrainer.chooseAnature(getPlayerAnature());
-		IAnature toSwitch = switchResult.getChoiceObject();
-		
+		Anature toSwitch = switchResult.getChoiceObject();
+
 		for(int i = 0; i < mEnemyTeam.size(); i++)
 		{
 			if(toSwitch.equals(mEnemyTeam.get(i)))
@@ -202,22 +198,22 @@ public class FightManager
 		}
 	}
 
-	public ArrayList<IAnature> getPlayerTeam()
+	public ArrayList<Anature> getPlayerTeam()
 	{
 		return mPlayerTeam;
 	}
 
-	public IAnature getPlayerAnature()
+	public Anature getPlayerAnature()
 	{
 		return mPlayerTeam.get(mPlayerIndex);
 	}
 
-	public ArrayList<IAnature> getEnemyTeam()
+	public ArrayList<Anature> getEnemyTeam()
 	{
 		return mEnemyTeam;
 	}
 
-	public IAnature getEnemyAnature()
+	public Anature getEnemyAnature()
 	{
 		return mEnemyTeam.get(mEnemyIndex);
 	}
@@ -232,7 +228,7 @@ public class FightManager
 		mTurnCount++;
 	}
 
-	private void checkNulls(ArrayList<IAnature> team, int indexOfMove)
+	private void checkNulls(ArrayList<Anature> team, int indexOfMove)
 	{
 		if(mPlayerTeam.get(0) == null)
 		{
@@ -244,15 +240,12 @@ public class FightManager
 			throw new NullPointerException("Enemy Anature was null, String or Result Object?");
 		}
 
-		if(team.get(0)
-				.getMoveSet() == null)
+		if(team.get(0).getMoveSet() == null)
 		{
 			throw new NullPointerException("Anature's MoveSet was null, String or Result Object?");
 		}
 
-		if(team.get(0)
-				.getMoveSet()
-				.getMove(indexOfMove) == null)
+		if(team.get(0).getMoveSet().getMove(indexOfMove) == null)
 		{
 			throw new NullPointerException("Anature's Move was null, String or Result Object?");
 		}
@@ -282,12 +275,12 @@ public class FightManager
 	{
 		return mPlayerIndex;
 	}
-	
-	public ArrayList<IAnature> getPlayerParticipantingAnatures()
+
+	public ArrayList<Anature> getPlayerParticipantingAnatures()
 	{
-		return new ArrayList<IAnature>(mPlayerParticipatingAnatures);
+		return new ArrayList<Anature>(mPlayerParticipatingAnatures);
 	}
-	
+
 	private void addPlayerAnatureParticipant(int index)
 	{
 		if(!mPlayerParticipatingAnatures.contains(mPlayerTeam.get(index)))

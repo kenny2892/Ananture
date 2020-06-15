@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
+import application.anatures.Anature;
 import application.anatures.AnatureBuilder;
 import application.controllers.LoggerController;
 import application.controllers.results.BattleResult;
@@ -19,7 +20,6 @@ import application.enums.LoggingTypes;
 import application.enums.SceneType;
 import application.enums.Species;
 import application.enums.WarpPoints;
-import application.interfaces.IAnature;
 import application.interfaces.ITrainer;
 import application.items.Anacube;
 import application.player.Player;
@@ -85,20 +85,20 @@ public class Startup extends Application
 
 	public static void createDemo()
 	{
-		IAnature first = AnatureBuilder.createAnature(Species.Null, 54);
-		first.updateName("Main Null");
+		Anature first = AnatureBuilder.createAnature(getPlayerName(), Species.Null, 54);
+		first.setName("Main Null");
 		mPlayer.addAnatures(first);
 		mPlayer.getAnatures().get(0).getStats().addExperience(14601);
 
-		IAnature second = AnatureBuilder.createAnature(Species.Null, 12);
-		second.updateName("Other Null");
+		Anature second = AnatureBuilder.createAnature(getPlayerName(), Species.Null, 12);
+		second.setName("Other Null");
 		mPlayer.addAnatures(second);
 
-		IAnature third = AnatureBuilder.createAnature(Species.Sardino, 14);
+		Anature third = AnatureBuilder.createAnature(getPlayerName(), Species.Sardino, 14);
 		mPlayer.addAnatures(third);
 		mPlayer.getAnatures().get(2).getStats().addExperience(630);
 
-		IAnature fourth = AnatureBuilder.createAnature(Species.Modenine, 16);
+		Anature fourth = AnatureBuilder.createAnature(getPlayerName(), Species.Modenine, 16);
 		mPlayer.addAnatures(fourth);
 		mPlayer.getAnatures().get(2).getStats().addExperience(630);
 
@@ -398,7 +398,7 @@ public class Startup extends Application
 	public static void newGame()
 	{
 		// TODO remove starter, tokens, and items after professor is added
-		IAnature starter = AnatureBuilder.createAnature(Species.Sardino, 5);
+		Anature starter = AnatureBuilder.createAnature(getPlayerName(), Species.Sardino, 5);
 		mPlayer.addAnatures(starter);
 		mPlayer.addTokens(500);
 

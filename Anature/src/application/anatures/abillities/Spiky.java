@@ -1,25 +1,22 @@
 package application.anatures.abillities;
 
+import application.anatures.Anature;
 import application.controllers.LoggerController;
 import application.enums.AbilityIds;
 import application.enums.LoggingTypes;
 import application.enums.Stat;
 import application.interfaces.IAbility;
-import application.interfaces.IAnature;
 import application.interfaces.IMove;
 
 public class Spiky implements IAbility
 {
 	private static final long serialVersionUID = -6679381514412927390L;
 
-	public static String activateAbility(IAnature source, IAnature target, IMove sourceMove, boolean isSourceAttacking, boolean attackMissed)
+	public static String activateAbility(Anature source, Anature target, IMove sourceMove, boolean isSourceAttacking, boolean attackMissed)
 	{
 		String result = "";
 
-		if(!hasNull(source, target, sourceMove)
-				&& sourceMove.isPhysicalAttack()
-				&& !isSourceAttacking
-				&& !attackMissed)
+		if(!hasNull(source, target, sourceMove) && sourceMove.isPhysicalAttack() && !isSourceAttacking && !attackMissed)
 		{
 			int newHp = target.getStats().getCurrentHitPoints() - (target.getStats().getTotalStat(Stat.HitPoints) / 8);
 
@@ -35,7 +32,7 @@ public class Spiky implements IAbility
 		return result;
 	}
 
-	private static boolean hasNull(IAnature userAnature, IAnature targetAnature, IMove moveThatAttacked)
+	private static boolean hasNull(Anature userAnature, Anature targetAnature, IMove moveThatAttacked)
 	{
 		if(userAnature == null)
 		{

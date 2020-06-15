@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
+import application.anatures.Anature;
 import application.anatures.movesets.MoveSet;
 import application.controllers.LoggerController;
 import application.enums.AiChoice;
@@ -11,7 +12,6 @@ import application.enums.LoggingTypes;
 import application.enums.Stat;
 import application.enums.TypeEffectiveness;
 import application.interfaces.IAI;
-import application.interfaces.IAnature;
 import application.interfaces.IHealthPotion;
 import application.interfaces.IMove;
 import application.pools.ItemPool;
@@ -77,7 +77,8 @@ class AI implements IAI, Serializable
 	 * PUBLIC METHODS
 	 */
 
-	public boolean willUseHealthPotion(ArrayList<IHealthPotion> healthPotionBases, IAnature currentAnature)
+	@Override
+	public boolean willUseHealthPotion(ArrayList<IHealthPotion> healthPotionBases, Anature currentAnature)
 	{
 		if(healthPotionBases == null)
 		{
@@ -99,7 +100,8 @@ class AI implements IAI, Serializable
 		return trainerHasHealthPotion && currentAnatureAtThreshold;
 	}
 
-	public IHealthPotion healthPotionToUse(ArrayList<IHealthPotion> healthPotionBases, IAnature currentAnature)
+	@Override
+	public IHealthPotion healthPotionToUse(ArrayList<IHealthPotion> healthPotionBases, Anature currentAnature)
 	{
 		if(healthPotionBases == null)
 		{
@@ -145,7 +147,8 @@ class AI implements IAI, Serializable
 		return healthPotionToUse;
 	}
 
-	public boolean willSwitchAnature(ArrayList<IAnature> anatureBases, IAnature enemyAnature, IAnature currentAnature)
+	@Override
+	public boolean willSwitchAnature(ArrayList<Anature> anatureBases, Anature enemyAnature, Anature currentAnature)
 	{
 		if(anatureBases == null)
 		{
@@ -172,7 +175,8 @@ class AI implements IAI, Serializable
 		return hasAnotherAnature && currentAnatureNotAtThreshold && hasAnatureAtThreshold;
 	}
 
-	public AiMoveChoice chooseMove(IAnature source, IAnature target)
+	@Override
+	public AiMoveChoice chooseMove(Anature source, Anature target)
 	{
 		if(source == null)
 		{
@@ -198,11 +202,12 @@ class AI implements IAI, Serializable
 		return randomAiMoveChoice;
 	}
 
-	public IAnature chooseNewAnature(ArrayList<IAnature> anatureBases, IAnature currentAnature, IAnature enemyAnature)
+	@Override
+	public Anature chooseNewAnature(ArrayList<Anature> anatureBases, Anature currentAnature, Anature enemyAnature)
 	{
-		IAnature anatureToReturn = currentAnature;
+		Anature anatureToReturn = currentAnature;
 
-		for(IAnature anatureBase : anatureBases)
+		for(Anature anatureBase : anatureBases)
 		{
 			if(!anatureBase.equals(currentAnature) && isAnatureAtThreshold(anatureBase, enemyAnature))
 			{
@@ -210,10 +215,10 @@ class AI implements IAI, Serializable
 				break;
 			}
 		}
-		
+
 		if(anatureToReturn.equals(currentAnature))
 		{
-			for(IAnature anatureBase : anatureBases)
+			for(Anature anatureBase : anatureBases)
 			{
 				if(!anatureBase.equals(currentAnature))
 				{
@@ -244,21 +249,21 @@ class AI implements IAI, Serializable
 		return hpPercentAfterHeal > 1;
 	}
 
-	private boolean isAnatureAtThreshold(IAnature currentAnature, IAnature enemyAnature)
+	private boolean isAnatureAtThreshold(Anature currentAnature, Anature enemyAnature)
 	{
 		TypeEffectiveness anatureEffectiveness = TypeEffectiveness.typeEffectiveness(currentAnature, enemyAnature);
 		return anatureEffectiveness.isAtOrAboveThreshold(mSwitchThreshold);
 	}
 
-	private boolean moveIsAtThreshold(IMove move, IAnature target)
+	private boolean moveIsAtThreshold(IMove move, Anature target)
 	{
 		TypeEffectiveness moveEffectiveness = TypeEffectiveness.typeEffectiveness(move, target);
 		return moveEffectiveness.isAtOrAboveThreshold(mMoveThreshold);
 	}
 
-	private boolean hasAnAnatureAtThreshold(ArrayList<IAnature> anatureParty, IAnature currentAnature, IAnature enemyAnature)
+	private boolean hasAnAnatureAtThreshold(ArrayList<Anature> anatureParty, Anature currentAnature, Anature enemyAnature)
 	{
-		for(IAnature anatureBase : anatureParty)
+		for(Anature anatureBase : anatureParty)
 		{
 			if(!anatureBase.equals(currentAnature) && isAnatureAtThreshold(anatureBase, enemyAnature) && anatureBase.getStats().getCurrentHitPoints() > 0)
 			{
@@ -268,7 +273,7 @@ class AI implements IAI, Serializable
 		return false;
 	}
 
-	private ArrayList<AiMoveChoice> moveChoiceList(IAnature source, IAnature target)
+	private ArrayList<AiMoveChoice> moveChoiceList(Anature source, Anature target)
 	{
 		ArrayList<AiMoveChoice> choices = new ArrayList<AiMoveChoice>();
 		TypeEffectiveness moveThreshold = mMoveThreshold;
@@ -284,7 +289,7 @@ class AI implements IAI, Serializable
 		return choices;
 	}
 
-	private ArrayList<AiMoveChoice> moveChoiceListAtThreshold(IAnature source, IAnature target, TypeEffectiveness threshold)
+	private ArrayList<AiMoveChoice> moveChoiceListAtThreshold(Anature source, Anature target, TypeEffectiveness threshold)
 	{
 		ArrayList<AiMoveChoice> choices = new ArrayList<AiMoveChoice>();
 

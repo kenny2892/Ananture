@@ -319,6 +319,27 @@ class Stats extends StatsBase implements IStats
 				.withIVSpeed(getIvStat(Stat.Speed));
 	}
 
+	public boolean deepEquals(IStats stats)
+	{
+		if(!(getLevel() == stats.getLevel()
+				&& getLevelingSpeed() == stats.getLevelingSpeed()
+				&& getNature() == stats.getNature()
+				&& getTotalExperiencePoints() == stats.getTotalExperiencePoints()
+				&& getBaseExperience() == stats.getBaseExperience()
+				&& getCurrentHitPoints() == stats.getCurrentHitPoints()))
+			return false;
+
+		for(Stat stat : Stat.values())
+		{
+			if(!(getBaseStat(stat) == stats.getTotalStat(stat)
+					&& getIvStat(stat) == stats.getIvStat(stat)
+					&& getEvStat(stat) == stats.getEvStat(stat)))
+				return false;
+		}
+
+		return true;
+	}
+
 	/*
 	 * PACKAGE METHODS
 	 */

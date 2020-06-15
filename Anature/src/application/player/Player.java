@@ -3,8 +3,8 @@ package application.player;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import application.anatures.Anature;
 import application.enums.Gender;
-import application.interfaces.IAnature;
 import javafx.scene.image.Image;
 
 public class Player implements Serializable
@@ -17,7 +17,7 @@ public class Player implements Serializable
 	private boolean[] mBadges;
 	private Backpack mBackpack;
 	private Image mSprite;
-	private ArrayList<IAnature> mPartyAnature;
+	private ArrayList<Anature> mPartyAnature;
 	private int mSelectedIndex;
 
 	public Player(Image sprite)
@@ -28,7 +28,7 @@ public class Player implements Serializable
 		mBadges = new boolean[10];
 		mBackpack = new Backpack();
 		mSprite = sprite;
-		mPartyAnature = new ArrayList<IAnature>();
+		mPartyAnature = new ArrayList<Anature>();
 		mSelectedIndex = 0;
 	}
 
@@ -94,17 +94,17 @@ public class Player implements Serializable
 		return mSprite;
 	}
 
-	public ArrayList<IAnature> getAnatures()
+	public ArrayList<Anature> getAnatures()
 	{
 		return mPartyAnature;
 	}
 
-	public void setAnature(int position, IAnature anature)
+	public void setAnature(int position, Anature anature)
 	{
 		mPartyAnature.set(position, anature);
 	}
 
-	public void addAnatures(IAnature toAdd)
+	public void addAnatures(Anature toAdd)
 	{
 		if(toAdd == null)
 			throw new IllegalArgumentException("toAdd was Null.");
@@ -132,7 +132,7 @@ public class Player implements Serializable
 	{
 		boolean canBattle = false;
 
-		for(IAnature anatureBase : mPartyAnature)
+		for(Anature anatureBase : mPartyAnature)
 		{
 			if(anatureBase.getStats().getCurrentHitPoints() > 0)
 			{

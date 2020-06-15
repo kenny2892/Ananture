@@ -1,7 +1,7 @@
 package application.anatures.moves.uniques;
 
+import application.anatures.Anature;
 import application.anatures.moves.Move;
-import application.interfaces.IAnature;
 import application.interfaces.IMove;
 
 public class NullMove extends Move
@@ -11,7 +11,7 @@ public class NullMove extends Move
 	private static IMove mNullMove;
 
 	@Override
-	public void activateMove(IAnature source, IAnature target)
+	public void activateMove(Anature source, Anature target)
 	{
 
 	}

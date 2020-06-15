@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 import application.DatabaseConnection;
-import application.Startup;
 import application.anatures.movesets.MoveSet;
 import application.anatures.stats.StatsBuilder;
 import application.enums.AbilityIds;
@@ -17,357 +16,150 @@ import application.enums.DatabaseType;
 import application.enums.Gender;
 import application.enums.MoveIds;
 import application.enums.Species;
-import application.enums.StatusEffects;
 import application.enums.Type;
 import application.enums.stats.LevelingSpeed;
 import application.enums.stats.Natures;
 import application.interfaces.IAbility;
-import application.interfaces.IAnature;
-import application.interfaces.IBuilder;
 import application.interfaces.IMove;
-import application.interfaces.stats.IStats;
 import application.pools.AbilityPool;
 import application.pools.MovePool;
 
-public class AnatureBuilder implements IBuilder<Anature>
+public class AnatureBuilder
 {
-	private Anature mAnature;
-
-	public AnatureBuilder()
-	{
-		generateNewAnature();
-	}
-
-	/*
-	 * PUBLIC SETS
-	 */
-
-	public AnatureBuilder withName(String name)
-	{
-		mAnature.setName(name);
-		return this;
-	}
-
-	public AnatureBuilder withOwnerName(String ownerName)
-	{
-		mAnature.setOwnerName(ownerName);
-		return this;
-	}
-
-	public AnatureBuilder isShiny(boolean isShiny)
-	{
-		mAnature.setIsShiny(isShiny);
-		return this;
-	}
-
-	public AnatureBuilder withSpecies(Species species)
-	{
-		mAnature.setSpecies(species);
-		return this;
-	}
-
-	public AnatureBuilder withGender(Gender gender)
-	{
-		mAnature.setGender(gender);
-		return this;
-	}
-
-	public AnatureBuilder withPrimaryType(Type primaryType)
-	{
-		mAnature.setPrimaryType(primaryType);
-		return this;
-	}
-
-	public AnatureBuilder withSecondaryType(Type secondaryType)
-	{
-		mAnature.setSecondaryType(secondaryType);
-		return this;
-	}
-
-	public AnatureBuilder withMoveSet(MoveSet moveSet)
-	{
-		mAnature.setMoveSet(moveSet);
-		return this;
-	}
-
-	public AnatureBuilder withAbility(IAbility ability)
-	{
-		mAnature.setAbility(ability);
-		return this;
-	}
-
-	public AnatureBuilder withStatus(StatusEffects statusEffect)
-	{
-		mAnature.setStatus(statusEffect);
-		return this;
-	}
-
-	public AnatureBuilder withStats(IStats stats)
-	{
-		mAnature.setStats(stats);
-		return this;
-	}
-
-	public AnatureBuilder withIndexNumber(int indexNumber)
-	{
-		mAnature.setIndexNumber(indexNumber);
-		return this;
-	}
-
-	public AnatureBuilder withCatchRate(int catchRate)
-	{
-		mAnature.setCatchRate(catchRate);
-		return this;
-	}
-
-	/*
-	 * PUBLIC METHODS
-	 */
-
-	public Anature create()
-	{
-		if(buildIsComplete())
-		{
-			Anature anatureToReturn = mAnature;
-
-			generateNewAnature();
-
-			return anatureToReturn;
-		}
-
-		throw new IllegalStateException("All the builder variables need to have a value before you create a Anature.");
-	}
-
-	/*
-	 * PRIVATE METHODS
-	 */
-
-	private void generateNewAnature()
-	{
-		mAnature = new Anature();
-	}
-
-	private boolean buildIsComplete()
-	{
-		return mAnature.canCreate();
-	}
-
-	/*
-	 * STATIC PUBLIC METHODS
-	 */
-
 	private static Random randomObject = new Random();
 
-	public static Anature createAnature(Species species, int level)
+	public static Anature createAnature(String playerName, Species species, int level)
 	{
-		String name = species.toString()
-				.replaceAll("_", " ");
-		String ownerName = Startup.getPlayerName();
-		Type[] types = new Type[]
-		{ Type.NotSet, Type.NotSet };
-
-		String possibleAbilitiesString = "";
-		String typesString = "";
-		String indexNumberString = "";
-		String levelingSpeedString = "";
-
-		String baseExperienceString = "";
-		String baseHitPointsString = "";
-		String baseAttackString = "";
-		String baseDefenseString = "";
-		String baseSpecialAttackString = "";
-		String baseSpecialDefenseString = "";
-		String baseSpeedString = "";
-		String baseAccuracyString = "";
-		String baseEvasionString = "";
-		String catchRateString = "";
-
-		try
+		return new Anature(new AnatureVariables()
 		{
-			Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureDatabase);
-
-			String query = "Select * from Anature Where SpeciesName=?";
-			PreparedStatement pst = connect.prepareStatement(query);
-			pst.setString(1, species.toString());
-
-			ResultSet results = pst.executeQuery();
-			if(results.next())
+			@Override
+			public void getVariables()
 			{
-				possibleAbilitiesString = results.getString("PossibleAbilities");
-				typesString = results.getString("Types");
-				indexNumberString = results.getString("IndexNumber");
-				levelingSpeedString = results.getString("LevelingSpeed");
+				anatureName = anatureSpecies.toString();
+				anatureOwnerName = playerName;
+				anatureIsShiny = generateIsShiny();
+				anatureSpecies = species;
+				anatureGender = generateGender();
 
-				baseExperienceString = results.getString("BaseExperience");
-				baseHitPointsString = results.getString("BaseHitPoints");
-				baseAttackString = results.getString("BaseAttack");
-				baseDefenseString = results.getString("BaseDefense");
-				baseSpecialAttackString = results.getString("BaseSpecialAttack");
-				baseSpecialDefenseString = results.getString("BaseSpecialDefense");
-				baseSpeedString = results.getString("BaseSpeed");
-				baseAccuracyString = results.getString("BaseAccuracy");
-				baseEvasionString = results.getString("BaseEvasion");
-				catchRateString = results.getString("CatchRate");
+				try
+				{
+					Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureDatabase);
+
+					String query = "Select * from Anature Where SpeciesName=?";
+					PreparedStatement pst = connect.prepareStatement(query);
+					pst.setString(1, species.toString());
+
+					ResultSet results = pst.executeQuery();
+					if(results.next())
+					{
+						Type[] types = generateTypes(results.getString("Types"));
+						anaturePrimaryType = types[0];
+						anatureSecondaryType = types[1];
+
+						anatureMoveSet = generateMoveSet(species, level);
+						anatureAbility = generateAbility(results.getString("PossibleAbilities"));
+
+						anatureIndexNumber = Integer.parseInt(results.getString("IndexNumber"));
+						anatureCatchRate = Integer.parseInt(results.getString("CatchRate"));
+
+						anatureStats = new StatsBuilder().atLevel(level)
+								.withLevlingSpeed(generateLevelingSpeed(results.getString("LevelingSpeed")))
+								.withNature(generateRandomNature())
+								.withBaseExperience(Integer.parseInt(results.getString("BaseExperience")))
+								.withBaseHitPoints(Integer.parseInt(results.getString("BaseHitPoints")))
+								.withBaseAttack(Integer.parseInt(results.getString("BaseAttack")))
+								.withBaseDefense(Integer.parseInt(results.getString("BaseDefense")))
+								.withBaseSpecialAttack(Integer.parseInt(results.getString("BaseSpecialAttack")))
+								.withBaseSpecialDefense(Integer.parseInt(results.getString("BaseSpecialDefense")))
+								.withBaseSpeed(Integer.parseInt(results.getString("BaseSpeed")))
+								.withBaseAccuracy(Integer.parseInt(results.getString("BaseAccuracy")))
+								.withBaseEvasion(Integer.parseInt(results.getString("BaseEvasion")))
+								.withIVAttack(randomObject.nextInt(32))
+								.withIVDefense(randomObject.nextInt(32))
+								.withIVHitPoints(randomObject.nextInt(32))
+								.withIVSpecialAttack(randomObject.nextInt(32))
+								.withIVSpecialDefense(randomObject.nextInt(32))
+								.withIVSpeed(randomObject.nextInt(32))
+								.create();
+					}
+
+					results.close();
+					pst.close();
+				}
+
+				catch(SQLException e)
+				{
+					e.printStackTrace();
+				}
 			}
-
-			results.close();
-			pst.close();
-		}
-
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-
-		types = generateTypes(typesString, types);
-		int indexNumber = Integer.parseInt(indexNumberString);
-
-		int baseExperience = Integer.parseInt(baseExperienceString);
-		int baseHitPoints = Integer.parseInt(baseHitPointsString);
-		int baseAttack = Integer.parseInt(baseAttackString);
-		int baseDefense = Integer.parseInt(baseDefenseString);
-		int baseSpecialAttack = Integer.parseInt(baseSpecialAttackString);
-		int baseSpecialDefense = Integer.parseInt(baseSpecialDefenseString);
-		int baseSpeed = Integer.parseInt(baseSpeedString);
-		int baseAccuracy = Integer.parseInt(baseAccuracyString);
-		int baseEvasion = Integer.parseInt(baseEvasionString);
-		int catchRate = Integer.parseInt(catchRateString);
-
-		return new AnatureBuilder().withName(name)
-				.withOwnerName(ownerName)
-				.isShiny(generateIsShiny())
-				.withSpecies(species)
-				.withGender(generateGender())
-				.withPrimaryType(types[0])
-				.withSecondaryType(types[1])
-				.withMoveSet(generateMoveSet(species, level))
-				.withAbility(generateAbility(possibleAbilitiesString))
-				.withStatus(StatusEffects.None)
-				.withCatchRate(catchRate)
-				.withStats(new StatsBuilder().atLevel(level)
-						.withLevlingSpeed(generateLevelingSpeed(levelingSpeedString))
-						.withNature(generateRandomNature())
-						.withBaseExperience(baseExperience)
-						.withBaseHitPoints(baseHitPoints)
-						.withBaseAttack(baseAttack)
-						.withBaseDefense(baseDefense)
-						.withBaseSpecialAttack(baseSpecialAttack)
-						.withBaseSpecialDefense(baseSpecialDefense)
-						.withBaseSpeed(baseSpeed)
-						.withBaseAccuracy(baseAccuracy)
-						.withBaseEvasion(baseEvasion)
-						.withIVAttack(randomObject.nextInt(32))
-						.withIVDefense(randomObject.nextInt(32))
-						.withIVHitPoints(randomObject.nextInt(32))
-						.withIVSpecialAttack(randomObject.nextInt(32))
-						.withIVSpecialDefense(randomObject.nextInt(32))
-						.withIVSpeed(randomObject.nextInt(32))
-						.create())
-				.withIndexNumber(indexNumber)
-				.create();
+		});
 	}
-	
-	public static Anature createEvolvedAnature(IAnature toEvolve, Species evolveInto)
+
+	public static Anature createEvolvedAnature(Anature toEvolve, Species evolveInto)
 	{
-		Type[] types = { Type.NotSet, Type.NotSet };
-
-		String possibleAbilitiesString = "";
-		String typesString = "";
-		String indexNumberString = "";
-		String levelingSpeedString = "";
-
-		String baseExperienceString = "";
-		String baseHitPointsString = "";
-		String baseAttackString = "";
-		String baseDefenseString = "";
-		String baseSpecialAttackString = "";
-		String baseSpecialDefenseString = "";
-		String baseSpeedString = "";
-		String baseAccuracyString = "";
-		String baseEvasionString = "";
-		String catchRateString = "";
-
-		try
+		return new Anature(new AnatureVariables()
 		{
-			Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureDatabase);
-
-			String query = "Select * from Anature Where SpeciesName=?";
-			PreparedStatement pst = connect.prepareStatement(query);
-			pst.setString(1, evolveInto.toString());
-
-			ResultSet results = pst.executeQuery();
-			if(results.next())
+			@Override
+			public void getVariables()
 			{
-				possibleAbilitiesString = results.getString("PossibleAbilities");
-				typesString = results.getString("Types");
-				indexNumberString = results.getString("IndexNumber");
-				levelingSpeedString = results.getString("LevelingSpeed");
+				String name = toEvolve.getName()
+						.compareTo(toEvolve.getSpecies()
+								.toString()) == 0 ? evolveInto.toString() : toEvolve.getName();
 
-				baseExperienceString = results.getString("BaseExperience");
-				baseHitPointsString = results.getString("BaseHitPoints");
-				baseAttackString = results.getString("BaseAttack");
-				baseDefenseString = results.getString("BaseDefense");
-				baseSpecialAttackString = results.getString("BaseSpecialAttack");
-				baseSpecialDefenseString = results.getString("BaseSpecialDefense");
-				baseSpeedString = results.getString("BaseSpeed");
-				baseAccuracyString = results.getString("BaseAccuracy");
-				baseEvasionString = results.getString("BaseEvasion");
-				catchRateString = results.getString("CatchRate");
+				anatureName = name;
+				anatureOwnerName = toEvolve.getOwner();
+				anatureIsShiny = toEvolve.isShiny();
+				anatureSpecies = evolveInto;
+				anatureGender = toEvolve.getGender();
+
+				try
+				{
+					Connection connect = DatabaseConnection.dbConnector(DatabaseType.AnatureDatabase);
+
+					String query = "Select * from Anature Where SpeciesName=?";
+					PreparedStatement pst = connect.prepareStatement(query);
+					pst.setString(1, evolveInto.toString());
+
+					ResultSet results = pst.executeQuery();
+					if(results.next())
+					{
+						Type[] types = generateTypes(results.getString("Types"));
+						anaturePrimaryType = types[0];
+						anatureSecondaryType = types[1];
+
+						anatureMoveSet = toEvolve.getMoveSet();
+						anatureAbility = generateAbility(results.getString("PossibleAbilities"));
+
+						anatureIndexNumber = Integer.parseInt(results.getString("IndexNumber"));
+						anatureCatchRate = Integer.parseInt(results.getString("CatchRate"));
+
+						anatureStats = toEvolve.getStats()
+								.getClone()
+								.atLevel(toEvolve.getStats()
+										.getLevel())
+								.withLevlingSpeed(generateLevelingSpeed(results.getString("LevelingSpeed")))
+								.withBaseExperience(Integer.parseInt(results.getString("BaseExperience")))
+								.withBaseHitPoints(Integer.parseInt(results.getString("BaseHitPoints")))
+								.withBaseAttack(Integer.parseInt(results.getString("BaseAttack")))
+								.withBaseDefense(Integer.parseInt(results.getString("BaseDefense")))
+								.withBaseSpecialAttack(Integer.parseInt(results.getString("BaseSpecialAttack")))
+								.withBaseSpecialDefense(Integer.parseInt(results.getString("BaseSpecialDefense")))
+								.withBaseSpeed(Integer.parseInt(results.getString("BaseSpeed")))
+								.withBaseAccuracy(Integer.parseInt(results.getString("BaseAccuracy")))
+								.withBaseEvasion(Integer.parseInt(results.getString("BaseEvasion")))
+								.create();
+					}
+
+					results.close();
+					pst.close();
+				}
+
+				catch(SQLException e)
+				{
+					e.printStackTrace();
+				}
 			}
-
-			results.close();
-			pst.close();
-		}
-
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-
-		types = generateTypes(typesString, types);
-		int indexNumber = Integer.parseInt(indexNumberString);
-
-		int baseExperience = Integer.parseInt(baseExperienceString);
-		int baseHitPoints = Integer.parseInt(baseHitPointsString);
-		int baseAttack = Integer.parseInt(baseAttackString);
-		int baseDefense = Integer.parseInt(baseDefenseString);
-		int baseSpecialAttack = Integer.parseInt(baseSpecialAttackString);
-		int baseSpecialDefense = Integer.parseInt(baseSpecialDefenseString);
-		int baseSpeed = Integer.parseInt(baseSpeedString);
-		int baseAccuracy = Integer.parseInt(baseAccuracyString);
-		int baseEvasion = Integer.parseInt(baseEvasionString);
-		int catchRate = Integer.parseInt(catchRateString);
-		
-		String name = toEvolve.getName().compareTo(toEvolve.getSpecies().toString()) == 0 ? evolveInto.toString() : toEvolve.getName();
-		
-		IStats stats = toEvolve.getStats().getClone()
-				.withLevlingSpeed(generateLevelingSpeed(levelingSpeedString))
-				.withBaseExperience(baseExperience)
-				.withBaseHitPoints(baseHitPoints)
-				.withBaseAttack(baseAttack)
-				.withBaseDefense(baseDefense)
-				.withBaseSpecialAttack(baseSpecialAttack)
-				.withBaseSpecialDefense(baseSpecialDefense)
-				.withBaseSpeed(baseSpeed)
-				.withBaseAccuracy(baseAccuracy)
-				.withBaseEvasion(baseEvasion)
-				.create();
-
-		Anature evolvedAnature = toEvolve.getClone()
-				.withName(name)
-				.withSpecies(evolveInto)
-				.withPrimaryType(types[0])
-				.withSecondaryType(types[1])
-				.withAbility(generateAbility(possibleAbilitiesString))
-				.withCatchRate(catchRate)
-				.withIndexNumber(indexNumber)
-				.withStats(stats)
-				.create();
-
-		evolvedAnature.getStats().addExperience(toEvolve.getStats().getExperienceProgression());
-		return evolvedAnature;
+		});
 	}
 
 	/*
@@ -454,7 +246,9 @@ public class AnatureBuilder implements IBuilder<Anature>
 		Random r = new Random();
 		toGenerate = r.nextInt(max);
 
-		while(toGenerate == otherIndex1 || toGenerate == otherIndex2 || toGenerate == otherIndex3)
+		while(toGenerate == otherIndex1
+				|| toGenerate == otherIndex2
+				|| toGenerate == otherIndex3)
 		{
 			toGenerate = r.nextInt(max);
 		}
@@ -484,17 +278,20 @@ public class AnatureBuilder implements IBuilder<Anature>
 		Random r = new Random();
 
 		ArrayList<String> abilities = new ArrayList<String>(Arrays.asList(possilbeAbilities.split(",")));
-		String abilityStr = abilities.get(r.nextInt(abilities.size())).replace(" ", "");
+		String abilityStr = abilities.get(r.nextInt(abilities.size()))
+				.replace(" ", "");
 		AbilityIds chosenAbility = AbilityIds.valueOf(abilityStr);
 
 		return AbilityPool.getAbility(chosenAbility);
 	}
 
-	private static Type[] generateTypes(String typesString, Type[] types)
+	private static Type[] generateTypes(String typesString)
 	{
+		Type[] types = new Type[] { Type.NotSet, Type.NotSet };
 		String[] typesStringArray = typesString.split(",");
 
-		for(int i = 0; i < typesStringArray.length && i < 2; i++)
+		for(int i = 0; i < typesStringArray.length
+				&& i < 2; i++)
 		{
 			types[i] = Type.valueOf(typesStringArray[i]);
 		}
@@ -520,5 +317,4 @@ public class AnatureBuilder implements IBuilder<Anature>
 
 		return r.nextInt(4200) == 420;
 	}
-
 }

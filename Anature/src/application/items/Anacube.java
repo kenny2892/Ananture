@@ -3,12 +3,12 @@ package application.items;
 import java.io.Serializable;
 import java.util.Random;
 
+import application.anatures.Anature;
 import application.controllers.results.ItemResult;
 import application.enums.AnacubeResults;
 import application.enums.Gender;
 import application.enums.ItemIds;
 import application.enums.Stat;
-import application.interfaces.IAnature;
 
 public class Anacube extends ItemBase implements Serializable
 {
@@ -27,7 +27,7 @@ public class Anacube extends ItemBase implements Serializable
 	}
 
 	@Override
-	public ItemResult useItem(IAnature target)
+	public ItemResult useItem(Anature target)
 	{
 		double maxHp = target.getStats().getTotalStat(Stat.HitPoints);
 		double currHp = target.getStats().getCurrentHitPoints();
@@ -139,7 +139,7 @@ public class Anacube extends ItemBase implements Serializable
 		return bool ? 1 : 0;
 	}
 
-	private double getStatusBonus(IAnature target)
+	private double getStatusBonus(Anature target)
 	{
 		switch(target.getStatus())
 		{

@@ -2,12 +2,12 @@ package application.controllers.menus;
 
 import java.util.ArrayList;
 
+import application.anatures.Anature;
 import application.anatures.AnatureBuilder;
 import application.animations.BlinkingAnimation;
 import application.animations.EvolutionAnimation;
 import application.controllers.ClickQueue;
 import application.enums.Species;
-import application.interfaces.IAnature;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -147,7 +147,7 @@ public class EvolutionController
 		}
 	}
 
-	public void startEvolution(ArrayList<IAnature> party, IAnature toEvolve, Species evolveInto, Runnable toRunWhenDone)
+	public void startEvolution(ArrayList<Anature> party, Anature toEvolve, Species evolveInto, Runnable toRunWhenDone)
 	{
 		BlinkingAnimation blinkingClickIndicator = new BlinkingAnimation(mClickIndicator, Duration.millis(500));
 		blinkingClickIndicator.play();
@@ -175,7 +175,7 @@ public class EvolutionController
 			mAnatureImg.setImage(new Image(getClass().getResource(imgPath).toExternalForm(), 1000.0, 1000.0, true, false));
 
 			mDialogueTxt.setText(toEvolve.getName() + " evolved into a " + evolveInto + "!");
-			IAnature evolved = AnatureBuilder.createEvolvedAnature(toEvolve, evolveInto);
+			Anature evolved = AnatureBuilder.createEvolvedAnature(toEvolve, evolveInto);
 			int indexToReplace = party.indexOf(toEvolve);
 			party.remove(indexToReplace);
 			party.add(indexToReplace, evolved);

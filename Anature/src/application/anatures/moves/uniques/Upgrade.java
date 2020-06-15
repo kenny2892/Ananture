@@ -1,8 +1,8 @@
 package application.anatures.moves.uniques;
 
+import application.anatures.Anature;
 import application.anatures.moves.Move;
 import application.enums.Stat;
-import application.interfaces.IAnature;
 import application.interfaces.stats.IStats;
 
 public class Upgrade extends Move
@@ -10,7 +10,7 @@ public class Upgrade extends Move
 	private static final long serialVersionUID = -6248044979167831318L;
 
 	@Override
-	public void activateMove(IAnature source, IAnature target)
+	public void activateMove(Anature source, Anature target)
 	{
 		IStats stats = source.getStats();
 		double maxStageValue = calculateMaxStageValue(stats);

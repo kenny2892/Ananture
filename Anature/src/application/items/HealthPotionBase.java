@@ -2,9 +2,9 @@ package application.items;
 
 import java.io.Serializable;
 
+import application.anatures.Anature;
 import application.controllers.results.ItemResult;
 import application.enums.ItemIds;
-import application.interfaces.IAnature;
 import application.interfaces.IHealthPotion;
 
 public class HealthPotionBase extends ItemBase implements IHealthPotion, Serializable
@@ -36,7 +36,7 @@ public class HealthPotionBase extends ItemBase implements IHealthPotion, Seriali
 	 */
 
 	@Override
-	public ItemResult useItem(IAnature target)
+	public ItemResult useItem(Anature target)
 	{
 		double oldHp = target.getStats().getCurrentHitPoints();
 		String dialogue = target.applyHeal(getHealAmount());

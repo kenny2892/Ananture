@@ -26,24 +26,24 @@ public class MoveSet implements Serializable
 		setMove(4, move4);
 	}
 
-	public boolean setMove(int moveNumber, IMove moveCore)
+	public boolean setMove(int moveNumber, IMove move)
 	{
 		switch(moveNumber)
 		{
 			case 1:
-				mMove1 = moveCore;
+				mMove1 = move;
 				return setMovePoints(moveNumber);
 
 			case 2:
-				mMove2 = moveCore;
+				mMove2 = move;
 				return setMovePoints(moveNumber);
 
 			case 3:
-				mMove3 = moveCore;
+				mMove3 = move;
 				return setMovePoints(moveNumber);
 
 			case 4:
-				mMove4 = moveCore;
+				mMove4 = move;
 				return setMovePoints(moveNumber);
 
 			case -1:
@@ -287,6 +287,17 @@ public class MoveSet implements Serializable
 		{
 			return BattleAnimationType.Special;
 		}
+	}
+
+	public boolean deepEquals(MoveSet moveSet)
+	{
+		for(int index = 1; index != 5; index++)
+		{
+			if(!this.getMove(index).equals(moveSet.getMove(index)))
+				return false;
+		}
+
+		return true;
 	}
 
 }

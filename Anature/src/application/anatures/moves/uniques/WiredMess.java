@@ -2,9 +2,9 @@ package application.anatures.moves.uniques;
 
 import java.util.Random;
 
+import application.anatures.Anature;
 import application.anatures.moves.Move;
 import application.enums.Stat;
-import application.interfaces.IAnature;
 import application.interfaces.stats.IStats;
 
 public class WiredMess extends Move
@@ -12,7 +12,7 @@ public class WiredMess extends Move
 	private static final long serialVersionUID = 214846540864140820L;
 
 	@Override
-	public void activateMove(IAnature source, IAnature target)
+	public void activateMove(Anature source, Anature target)
 	{
 		Random rng = new Random();
 		int firstToDecrease = rng.nextInt(4) + 1;
@@ -34,7 +34,7 @@ public class WiredMess extends Move
 		return toReturn;
 	}
 
-	private void decreaseStat(int statNumber, IAnature toLower)
+	private void decreaseStat(int statNumber, Anature toLower)
 	{
 		IStats stats = toLower.getStats();
 

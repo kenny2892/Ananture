@@ -3,11 +3,11 @@ package application.anatures.moves;
 import java.io.Serializable;
 import java.util.Random;
 
+import application.anatures.Anature;
 import application.enums.MoveIds;
 import application.enums.Stat;
 import application.enums.Type;
 import application.enums.TypeEffectiveness;
-import application.interfaces.IAnature;
 import application.interfaces.IMove;
 import application.interfaces.stats.IStats;
 
@@ -174,7 +174,7 @@ public class Move implements IMove, Serializable
 	 * PROTECTED METHODS
 	 */
 
-	public int calculateDamage(IAnature source, IAnature target, boolean isSpecialMove)
+	public int calculateDamage(Anature source, Anature target, boolean isSpecialMove)
 	{
 		IStats sourceStats = source.getStats();
 		IStats targetStats = target.getStats();
@@ -232,7 +232,7 @@ public class Move implements IMove, Serializable
 	 * PUBLIC METHODS
 	 */
 
-	public void activateMove(IAnature source, IAnature target)
+	public void activateMove(Anature source, Anature target)
 	{
 		throw new IllegalStateException("This method should not be called.");
 	}

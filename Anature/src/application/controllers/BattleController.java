@@ -8,6 +8,7 @@ import java.util.Random;
 import application.EvolutionManager;
 import application.FightManager;
 import application.Startup;
+import application.anatures.Anature;
 import application.anatures.movesets.MoveSet;
 import application.animations.AnacubeThrow;
 import application.animations.BlinkingAnimation;
@@ -37,7 +38,6 @@ import application.enums.StatusEffects;
 import application.enums.TrainerIds;
 import application.enums.Type;
 import application.interfaces.AiChoiceObject;
-import application.interfaces.IAnature;
 import application.interfaces.IItem;
 import application.interfaces.IMove;
 import application.interfaces.ITrainer;
@@ -469,7 +469,7 @@ public class BattleController
 	private void onPlayerAnatureDeath()
 	{
 		boolean isThereAliveAnatureInParty = false;
-		for(IAnature anature : mPlayer.getAnatures())
+		for(Anature anature : mPlayer.getAnatures())
 		{
 			if(anature.getStats().getCurrentHitPoints() > 0)
 			{
@@ -519,7 +519,7 @@ public class BattleController
 	private void onEnemyAnatureDeath()
 	{
 		boolean isThereAliveAnatureInParty = false;
-		for(IAnature anature : mEnemyTrainer.getAnatureParty())
+		for(Anature anature : mEnemyTrainer.getAnatureParty())
 		{
 			if(anature.getStats().getCurrentHitPoints() > 0)
 			{
@@ -536,7 +536,7 @@ public class BattleController
 
 			Runnable enemySwitch = () ->
 			{
-				IAnature playerAnature = mFightManager.getPlayerAnature();
+				Anature playerAnature = mFightManager.getPlayerAnature();
 				activateEnemySwitch(mEnemyTrainer.chooseAnature(playerAnature), () -> resetGui());
 			};
 
@@ -554,14 +554,14 @@ public class BattleController
 
 	private void evaluateAnatureExperienceGain()
 	{
-		IAnature enemyAnature = mFightManager.getEnemyAnature();
+		Anature enemyAnature = mFightManager.getEnemyAnature();
 
-		ArrayList<IAnature> participatingAnatures = mFightManager.getPlayerParticipantingAnatures();
+		ArrayList<Anature> participatingAnatures = mFightManager.getPlayerParticipantingAnatures();
 		// TODO we need to gather the Exp gains here or somewhere else
 		// TODO there is more to do for Exp share but we don't have it
 		double isTrainerCalculation = mEnemyTrainer.getId().equals(TrainerIds.Wild) ? 1.0 : 1.5;
 
-		for(IAnature playerAnature : participatingAnatures)
+		for(Anature playerAnature : participatingAnatures)
 		{
 			double playerAnatureLevel = playerAnature.getStats().getLevel();
 			double enemyAnatureLevel = enemyAnature.getStats().getLevel();
@@ -579,7 +579,7 @@ public class BattleController
 		}
 	}
 
-	private void updateXp(IAnature anature, int xpGained, int lvlsGained)
+	private void updateXp(Anature anature, int xpGained, int lvlsGained)
 	{
 		mClickQueue.enqueue(() ->
 		{
@@ -613,7 +613,7 @@ public class BattleController
 		XpBarIncrease animation = new XpBarIncrease(mPlayerXp, Duration.seconds(1), mPlayerXp.get() + newCurrXp, lvlsGained);
 		animation.setOnFinished(event ->
 		{
-			IAnature curr = mFightManager.getPlayerAnature();
+			Anature curr = mFightManager.getPlayerAnature();
 
 			if(animation.getLvlsGained() > 0)
 			{
@@ -669,8 +669,8 @@ public class BattleController
 		{
 			event.consume();
 
-			IAnature curr = mFightManager.getPlayerAnature();
-			IAnature toSwitchTo = mPlayer.getAnatures().get(mSwitchIndexSelected);
+			Anature curr = mFightManager.getPlayerAnature();
+			Anature toSwitchTo = mPlayer.getAnatures().get(mSwitchIndexSelected);
 
 			if(toSwitchTo.getStats().getCurrentHitPoints() <= 0 || curr.equals(toSwitchTo))
 			{
@@ -780,12 +780,18 @@ public class BattleController
 	{
 		Image anatureImg = new Image(getClass().getResource("/resources/images/anatures/Null_Front.png").toExternalForm());
 
-		mSlotOne = new AnatureSlot(scene, true, anatureImg, Gender.Female, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotOne, 100.0, 100.0, true, StatusEffects.None);
-		mSlotTwo = new AnatureSlot(scene, false, anatureImg, Gender.Male, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotTwo, 100.0, 100.0, false, StatusEffects.None);
-		mSlotThree = new AnatureSlot(scene, false, anatureImg, Gender.Female, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotThree, 100.0, 100.0, false, StatusEffects.None);
-		mSlotFour = new AnatureSlot(scene, false, anatureImg, Gender.Male, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotFour, 100.0, 100.0, false, StatusEffects.None);
-		mSlotFive = new AnatureSlot(scene, false, anatureImg, Gender.Female, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotFive, 100.0, 100.0, false, StatusEffects.None);
-		mSlotSix = new AnatureSlot(scene, false, anatureImg, Gender.Male, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotSix, 100.0, 100.0, false, StatusEffects.None);
+		mSlotOne = new AnatureSlot(scene, true, anatureImg, Gender.Female, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotOne, 100.0, 100.0, true,
+				StatusEffects.None);
+		mSlotTwo = new AnatureSlot(scene, false, anatureImg, Gender.Male, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotTwo, 100.0, 100.0, false,
+				StatusEffects.None);
+		mSlotThree = new AnatureSlot(scene, false, anatureImg, Gender.Female, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotThree, 100.0, 100.0, false,
+				StatusEffects.None);
+		mSlotFour = new AnatureSlot(scene, false, anatureImg, Gender.Male, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotFour, 100.0, 100.0, false,
+				StatusEffects.None);
+		mSlotFive = new AnatureSlot(scene, false, anatureImg, Gender.Female, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotFive, 100.0, 100.0, false,
+				StatusEffects.None);
+		mSlotSix = new AnatureSlot(scene, false, anatureImg, Gender.Male, "Null", "Lvl 5", "20/20", mShowSwitch, mSwitchSlotSix, 100.0, 100.0, false,
+				StatusEffects.None);
 
 		createBindsAnatureslot(mSlotOne, scene, 85, 4.2, 3.7, 15.1, 0); // TODO update images and hp bars
 		createBindsAnatureslot(mSlotTwo, scene, 85, 3.157, 3.7, 15.1, 1);
@@ -980,8 +986,8 @@ public class BattleController
 
 	public void updateElements(Player player, ITrainer enemyTrainer)
 	{
-		IAnature enemyCurr = enemyTrainer.getAnatureParty().get(0);
-		IAnature playerCurr = player.getAnatures().get(0);
+		Anature enemyCurr = enemyTrainer.getAnatureParty().get(0);
+		Anature playerCurr = player.getAnatures().get(0);
 
 		mPlayer = player;
 		mEnemyTrainer = enemyTrainer;
@@ -1003,7 +1009,7 @@ public class BattleController
 		mThrownAnacubeImg.setVisible(false);
 	}
 
-	private void startIntro(Player player, ITrainer enemyTrainer, IAnature enemyCurr)
+	private void startIntro(Player player, ITrainer enemyTrainer, Anature enemyCurr)
 	{
 		mClickQueue.enqueue(new Runnable()
 		{
@@ -1093,7 +1099,7 @@ public class BattleController
 		}
 	}
 
-	private void updatePlayerAnature(IAnature playerCurr)
+	private void updatePlayerAnature(Anature playerCurr)
 	{
 		mPlayerName.set(playerCurr.getName());
 
@@ -1111,7 +1117,7 @@ public class BattleController
 		updateMoves(playerCurr);
 	}
 
-	private void updateEnemyAnature(IAnature enemyCurr)
+	private void updateEnemyAnature(Anature enemyCurr)
 	{
 		mEnemyName.set(enemyCurr.getName());
 
@@ -1124,7 +1130,7 @@ public class BattleController
 		updateStatusIcon(mStatusIconEnemy, enemyCurr);
 	}
 
-	private void updateMoves(IAnature playerCurr)
+	private void updateMoves(Anature playerCurr)
 	{
 		MoveSet moves = playerCurr.getMoveSet(); // TODO Make move btn color change based on move type
 		IMove move1 = moves.getMove(1);
@@ -1153,7 +1159,7 @@ public class BattleController
 		}
 	}
 
-	private void updateSwitch(ArrayList<IAnature> party, int selectedIndex)
+	private void updateSwitch(ArrayList<Anature> party, int selectedIndex)
 	{
 		boolean isSelected = false;
 
@@ -1261,8 +1267,8 @@ public class BattleController
 
 		mSwitchIndexSelected = selectedIndex;
 
-		ArrayList<IAnature> party = mPlayer.getAnatures();
-		IAnature selected = party.get(selectedIndex);
+		ArrayList<Anature> party = mPlayer.getAnatures();
+		Anature selected = party.get(selectedIndex);
 
 		mSwitchSelectedCatalogNum.setText(String.format("%03d", selected.getIndexNumber()));
 		mSwitchSelectedName.setText(selected.getName());
@@ -1308,7 +1314,7 @@ public class BattleController
 		return new Image(toCheck.toURI().toString(), 100.0, 100.0, true, false);
 	}
 
-	private void updateSwitchSlot(IAnature curr, Image anatureImg, BooleanProperty visibleProp, AnatureSlot slot, boolean isSelected)
+	private void updateSwitchSlot(Anature curr, Image anatureImg, BooleanProperty visibleProp, AnatureSlot slot, boolean isSelected)
 	{
 		visibleProp.set(true);
 		slot.updateSlot(isSelected, anatureImg, curr.getGender(), curr.getName(), "Lvl " + curr.getStats().getLevel(),
@@ -1395,7 +1401,7 @@ public class BattleController
 		}
 	}
 
-	private void updateGender(IAnature anature, boolean isPlayer)
+	private void updateGender(Anature anature, boolean isPlayer)
 	{
 		Image toUse = mMaleIcon;
 
@@ -1549,7 +1555,7 @@ public class BattleController
 
 	private void activateTurn(BattleChoice choice)
 	{
-		IAnature anatureForSwitching = mPlayer.getAnatures().get(mSwitchIndexSelected);
+		Anature anatureForSwitching = mPlayer.getAnatures().get(mSwitchIndexSelected);
 
 		if(anatureForSwitching.getStats().getCurrentHitPoints() <= 0)
 		{
@@ -1557,8 +1563,8 @@ public class BattleController
 		}
 
 		mShowBtns.set(false);
-		IAnature enemyCurr = mFightManager.getEnemyAnature();
-		IAnature playerCurr = mFightManager.getPlayerAnature();
+		Anature enemyCurr = mFightManager.getEnemyAnature();
+		Anature playerCurr = mFightManager.getPlayerAnature();
 
 		AiChoiceObject<?> enemyTurn = mEnemyTrainer.useTurn(playerCurr);
 
@@ -1619,7 +1625,7 @@ public class BattleController
 		mClickQueue.dequeue().run();
 	}
 
-	private void activatePlayerTurn(IAnature playerCurr, IAnature enemyCurr, BattleChoice choice, Runnable nextTurn)
+	private void activatePlayerTurn(Anature playerCurr, Anature enemyCurr, BattleChoice choice, Runnable nextTurn)
 	{
 		if(beforeTurnStatusCheck(true, playerCurr) || choice == BattleChoice.Item || choice == BattleChoice.Switch)
 		{
@@ -1632,7 +1638,7 @@ public class BattleController
 		}
 	}
 
-	private void activateEnemyTurn(IAnature playerCurr, IAnature enemyCurr, AiChoiceObject<?> enemyTurn, Runnable nextTurn)
+	private void activateEnemyTurn(Anature playerCurr, Anature enemyCurr, AiChoiceObject<?> enemyTurn, Runnable nextTurn)
 	{
 		AiChoice aiChoice = enemyTurn.getAiChoice();
 		if(beforeTurnStatusCheck(false, enemyCurr) || aiChoice == AiChoice.Item_Consumed || aiChoice == AiChoice.Switch_Anature)
@@ -1676,7 +1682,7 @@ public class BattleController
 
 	private void playerTurn(BattleChoice choice, Runnable nextTurn)
 	{
-		IAnature playerAnature = mFightManager.getPlayerAnature();
+		Anature playerAnature = mFightManager.getPlayerAnature();
 
 		switch(choice)
 		{
@@ -1821,9 +1827,9 @@ public class BattleController
 				mPlayerFaintSequenceActive = false;
 
 				mFightManager.setPlayerSelectedIndex(mSwitchIndexSelected);
-				IAnature oldAnature = mPlayer.getAnatures().get(mPlayer.getSelectedIndex());
+				Anature oldAnature = mPlayer.getAnatures().get(mPlayer.getSelectedIndex());
 				mPlayer.setSelectedIndex(mSwitchIndexSelected);
-				IAnature newAnature = mPlayer.getAnatures().get(mPlayer.getSelectedIndex());
+				Anature newAnature = mPlayer.getAnatures().get(mPlayer.getSelectedIndex());
 
 				OpacityAnimation fadeOld = new OpacityAnimation(mAnatureBack, Duration.millis(400), false);
 				fadeOld.setOnFinished(new EventHandler<ActionEvent>()
@@ -1874,8 +1880,8 @@ public class BattleController
 	{
 		mPlayerFaintSequenceActive = false;
 
-		IAnature oldAnature = mFightManager.getEnemyAnature();
-		IAnature newAnature = (IAnature) enemyTurn.getChoiceObject();
+		Anature oldAnature = mFightManager.getEnemyAnature();
+		Anature newAnature = (Anature) enemyTurn.getChoiceObject();
 		int newAnatureIndex = mEnemyTrainer.getAnatureIndex(newAnature);
 		mEnemyTrainer.setCurrentAnature(newAnature);
 		mFightManager.setEnemySelectedIndex(newAnatureIndex);
@@ -1926,7 +1932,7 @@ public class BattleController
 		}
 	}
 
-	private boolean calculateWhoGoesFirst(IAnature playerCurr, IAnature enemyCurr, BattleChoice choice, AiChoiceObject<?> enemyTurn)
+	private boolean calculateWhoGoesFirst(Anature playerCurr, Anature enemyCurr, BattleChoice choice, AiChoiceObject<?> enemyTurn)
 	{
 		boolean playerWantsToGoFirst = choice == BattleChoice.Switch || choice == BattleChoice.Item;
 		boolean enemyWantsToGoFirst = enemyTurn.getAiChoice() == AiChoice.Switch_Anature || enemyTurn.getAiChoice() == AiChoice.Item_Consumed;
@@ -1937,12 +1943,12 @@ public class BattleController
 		{
 			compareSpeeds += Math.random() > 0.5 ? -1 : 1;
 		}
-		
+
 		else if(playerWantsToGoFirst)
 		{
 			compareSpeeds = 1;
 		}
-		
+
 		else if(enemyWantsToGoFirst)
 		{
 			compareSpeeds = -1;
@@ -2002,7 +2008,7 @@ public class BattleController
 		animation.play();
 	}
 
-	private void useAttack(IAnature anature, boolean isPlayer, BattleChoice choice, int moveNum)
+	private void useAttack(Anature anature, boolean isPlayer, BattleChoice choice, int moveNum)
 	{
 		MoveResult moveResult = mFightManager.attack(isPlayer, moveNum);
 		AbilityResult abilityResult = moveResult.getAbilityResult();
@@ -2052,7 +2058,7 @@ public class BattleController
 
 	private void healthDrainMove(MoveResult result, boolean playerWasTarget)
 	{
-		IAnature userAnature = null, targetAnature = null;
+		Anature userAnature = null, targetAnature = null;
 		DoubleProperty userOldHp, targetOldHp;
 
 		if(!result.isPlayer())
@@ -2308,7 +2314,7 @@ public class BattleController
 		}, id);
 	}
 
-	private boolean beforeTurnStatusCheck(boolean isPlayer, IAnature anature)
+	private boolean beforeTurnStatusCheck(boolean isPlayer, Anature anature)
 	{
 		StatusEffects anatureStatus = anature.getStatus();
 		boolean canAttack = true;
@@ -2351,7 +2357,7 @@ public class BattleController
 		return canAttack;
 	}
 
-	private void afterTurnStatusCheck(boolean isPlayer, IAnature anature)
+	private void afterTurnStatusCheck(boolean isPlayer, Anature anature)
 	{
 		StatusEffects anatureStatus = anature.getStatus();
 		boolean wasChanged = false;
@@ -2388,7 +2394,7 @@ public class BattleController
 		}
 	}
 
-	private boolean afterAllTurnsStatusCheck(boolean isPlayer, IAnature anature, Runnable nextTurn)
+	private boolean afterAllTurnsStatusCheck(boolean isPlayer, Anature anature, Runnable nextTurn)
 	{
 		StatusEffects anatureStatus = anature.getStatus();
 
@@ -2407,7 +2413,8 @@ public class BattleController
 			case Burn:
 				mClickQueue.enqueue(() ->
 				{
-					healthDrainStatus(anature.getName() + " is hurt because it is burned!", anature.getStats().getTotalStat(Stat.HitPoints) / 16, isPlayer, nextTurn);
+					healthDrainStatus(anature.getName() + " is hurt because it is burned!", anature.getStats().getTotalStat(Stat.HitPoints) / 16, isPlayer,
+							nextTurn);
 					mFightManager.applyDamage(isPlayer, anature.getStats().getTotalStat(Stat.HitPoints) / 16);
 				}, "Burn After All Turns");
 
@@ -2426,7 +2433,7 @@ public class BattleController
 		return false;
 	}
 
-	private boolean updateStatusIcon(ImageView icon, IAnature toCheck)
+	private boolean updateStatusIcon(ImageView icon, Anature toCheck)
 	{
 		StatusEffects anatureStatus = toCheck.getStatus();
 		boolean wasChanged = false;
@@ -2467,7 +2474,7 @@ public class BattleController
 
 	private void updateMpCounts()
 	{
-		IAnature playerAnature = mFightManager.getPlayerAnature();
+		Anature playerAnature = mFightManager.getPlayerAnature();
 		MoveSet moveSet = playerAnature.getMoveSet();
 
 		if(moveSet.hasMove(1))
@@ -2526,10 +2533,10 @@ public class BattleController
 
 	private void addEvs()
 	{
-		ArrayList<IAnature> participatingAnatures = mFightManager.getPlayerParticipantingAnatures();
+		ArrayList<Anature> participatingAnatures = mFightManager.getPlayerParticipantingAnatures();
 		Stat evToAddTo = mFightManager.getEnemyAnature().getStats().getLargestStat();
 
-		for(IAnature anature : participatingAnatures)
+		for(Anature anature : participatingAnatures)
 		{
 			anature.getStats().addEv(evToAddTo, anature.getStats().getLevel());
 		}
@@ -2573,9 +2580,9 @@ public class BattleController
 
 	private void endBattle(BattleEndMethods endMethod)
 	{
-		HashMap<IAnature, Species> evolutions = new HashMap<IAnature, Species>();
+		HashMap<Anature, Species> evolutions = new HashMap<Anature, Species>();
 
-		for(IAnature toCheck : mPlayer.getAnatures())
+		for(Anature toCheck : mPlayer.getAnatures())
 		{
 			Species canEvolveInto = EvolutionManager.checkEvolution(toCheck);
 
