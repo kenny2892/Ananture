@@ -1,6 +1,7 @@
 package application.controllers.results;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import application.anatures.Anature;
 import application.enums.BattleEndMethods;
@@ -30,5 +31,18 @@ public class BattleResult
 	public HashMap<Anature, Species> getAnaturesToEvolve()
 	{
 		return mAnaturesToEvolve;
+	}
+	
+	public Entry<IAnature, Species> popEvolvedAnature()
+	{
+		if(mAnaturesToEvolve == null || mAnaturesToEvolve.size() <= 0)
+		{
+			return null;
+		}
+		
+		Entry<IAnature, Species> toReturn = mAnaturesToEvolve.entrySet().iterator().next();
+		mAnaturesToEvolve.remove(toReturn.getKey());
+		
+		return toReturn;
 	}
 }

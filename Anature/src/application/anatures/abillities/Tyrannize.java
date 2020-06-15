@@ -2,6 +2,7 @@ package application.anatures.abillities;
 
 import application.anatures.Anature;
 import application.enums.AbilityIds;
+import application.enums.Stat;
 import application.interfaces.IAbility;
 
 public class Tyrannize implements IAbility
@@ -10,7 +11,7 @@ public class Tyrannize implements IAbility
 
 	public static String activateAbility(Anature user, Anature target)
 	{
-		target.getStats().decreaseTempAttack();
+		target.getStats().decreaseTempStat(Stat.Attack);
 		return target.getName() + "'s attack was lowered by " + user.getName() + "'s Tyrannize ability!";
 	}
 

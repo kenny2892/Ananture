@@ -4,6 +4,7 @@ import application.anatures.Anature;
 import application.controllers.LoggerController;
 import application.enums.AbilityIds;
 import application.enums.LoggingTypes;
+import application.enums.Stat;
 import application.interfaces.IAbility;
 
 public class LittleGuy implements IAbility
@@ -18,7 +19,7 @@ public class LittleGuy implements IAbility
 			return "";
 		}
 
-		userAnature.getStats().increaseTempEvasion();
+		userAnature.getStats().increaseTempStat(Stat.Evasion);
 
 		return userAnature.getName() + " increased it's evasion with its \"Little Guy\" ability!";
 	}

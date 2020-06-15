@@ -2,7 +2,7 @@ package application.anatures.movesets;
 
 import java.io.Serializable;
 
-import application.anatures.moves.moves.NullMove;
+import application.anatures.moves.uniques.NullMove;
 
 public class NullMoveSet extends MoveSet implements Serializable
 {

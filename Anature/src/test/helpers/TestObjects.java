@@ -3,8 +3,7 @@ package test.helpers;
 import application.anatures.Anature;
 import application.anatures.AnatureVariables;
 import application.anatures.abillities.NullAbility;
-import application.anatures.moves.moves.NullMove;
-import application.anatures.moves.moves.Tackle;
+import application.anatures.moves.abstracts.JustDamageDealing;
 import application.anatures.movesets.MoveSet;
 import application.anatures.stats.StatsBuilder;
 import application.enums.AbilityIds;
@@ -31,7 +30,7 @@ public class TestObjects
 	{
 		if(mTackle == null)
 		{
-			mTackle = new Tackle();
+			mTackle = new JustDamageDealing();
 		}
 
 		return mTackle;

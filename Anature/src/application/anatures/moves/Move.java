@@ -48,8 +48,7 @@ public class Move implements IMove, Serializable
 			throw new IllegalArgumentException("Passed value \"name\" was null.");
 		}
 
-		if(name.trim()
-				.isEmpty())
+		if(name.trim().isEmpty())
 		{
 			throw new IllegalArgumentException("Passed value \"name\" was an empty string.");
 		}
@@ -175,7 +174,7 @@ public class Move implements IMove, Serializable
 	 * PROTECTED METHODS
 	 */
 
-	protected int calculateDamage(Anature source, Anature target, boolean isSpecialMove)
+	public int calculateDamage(IAnature source, IAnature target, boolean isSpecialMove)
 	{
 		IStats sourceStats = source.getStats();
 		IStats targetStats = target.getStats();
@@ -184,13 +183,11 @@ public class Move implements IMove, Serializable
 		double movePower = (double) getMovePower();
 		double attackStat = isSpecialMove ? sourceStats.getTotalStat(Stat.SpecialAttack) : sourceStats.getTotalStat(Stat.Attack);
 		double defenseStat = isSpecialMove ? (double) targetStats.getTotalStat(Stat.SpecialDefense) : (double) targetStats.getTotalStat(Stat.Defense);
-		double typeMatchCalculation = source.getTypes()
-				.contains(getType()) ? 1.5 : 1.0;
+		double typeMatchCalculation = source.getTypes().contains(getType()) ? 1.5 : 1.0;
 		double typeAdvantageCalculation = TypeEffectiveness.typeEffectiveness(this, target).getEffectiveness();
 		double randomNumberCalculation = randomObject.nextInt(16) + 85;
 
-		return (int) ((((levelCalculation * movePower * attackStat / defenseStat) / 50.0) + 2.0) * typeMatchCalculation * typeAdvantageCalculation
-				* randomNumberCalculation / 100.0);
+		return (int) ((((levelCalculation * movePower * attackStat / defenseStat) / 50.0) + 2.0) * typeMatchCalculation * typeAdvantageCalculation * randomNumberCalculation / 100.0);
 	}
 
 	/*

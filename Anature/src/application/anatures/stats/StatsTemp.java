@@ -62,78 +62,84 @@ class StatsTemp implements IStatsTemp, Serializable
 		return mTempEvasion;
 	}
 
-	/*
-	 * PROTECTED METHODS
-	 */
-
-	public void increaseTempAttack()
+	@Override
+	public boolean increaseTempStat(Stat stat)
 	{
-		mTempAttack = mTempAttack.incrementStage();
+		switch(stat)
+		{
+			case Accuracy:
+				mTempAccuracy = mTempAccuracy.incrementStage();
+				break;
+
+			case Attack:
+				mTempAttack = mTempAttack.incrementStage();
+				break;
+
+			case Defense:
+				mTempDefense = mTempDefense.incrementStage();
+				break;
+
+			case Evasion:
+				mTempEvasion = mTempEvasion.incrementStage();
+				break;
+
+			case SpecialAttack:
+				mTempSpecialAttack = mTempSpecialAttack.incrementStage();
+				break;
+
+			case SpecialDefense:
+				mTempSpecialDefense = mTempSpecialDefense.incrementStage();
+				break;
+
+			case Speed:
+				mTempSpeed = mTempSpeed.incrementStage();
+				break;
+
+			default:
+				return false;
+		}
+		
+		return true;
 	}
 
-	public void decreaseTempAttack()
+	@Override
+	public boolean decreaseTempStat(Stat stat)
 	{
-		mTempAttack = mTempAttack.decrementStage();
-	}
+		switch(stat)
+		{
+			case Accuracy:
+				mTempAccuracy = mTempAccuracy.decrementStage();
+				break;
 
-	public void increaseTempDefense()
-	{
-		mTempDefense = mTempDefense.incrementStage();
-	}
+			case Attack:
+				mTempAttack = mTempAttack.decrementStage();
+				break;
 
-	public void decreaseTempDefense()
-	{
-		mTempDefense = mTempDefense.decrementStage();
-	}
+			case Defense:
+				mTempDefense = mTempDefense.decrementStage();
+				break;
 
-	public void increaseTempSpecialAttack()
-	{
-		mTempSpecialAttack = mTempSpecialAttack.incrementStage();
-	}
+			case Evasion:
+				mTempEvasion = mTempEvasion.decrementStage();
+				break;
 
-	public void decreaseTempSpecialAttack()
-	{
-		mTempSpecialAttack = mTempSpecialAttack.decrementStage();
-	}
+			case SpecialAttack:
+				mTempSpecialAttack = mTempSpecialAttack.decrementStage();
+				break;
 
-	public void increaseTempSpecialDefense()
-	{
-		mTempSpecialDefense = mTempSpecialDefense.incrementStage();
-	}
+			case SpecialDefense:
+				mTempSpecialDefense = mTempSpecialDefense.decrementStage();
+				break;
 
-	public void decreaseTempSpecialDefense()
-	{
-		mTempSpecialDefense = mTempSpecialDefense.decrementStage();
-	}
+			case Speed:
+				mTempSpeed = mTempSpeed.decrementStage();
+				break;
 
-	public void increaseTempSpeed()
-	{
-		mTempSpeed = mTempSpeed.incrementStage();
-	}
-
-	public void decreaseTempSpeed()
-	{
-		mTempSpeed = mTempSpeed.decrementStage();
-	}
-
-	public void increaseTempAccuracy()
-	{
-		mTempAccuracy = mTempAccuracy.incrementStage();
-	}
-
-	public void decreaseTempAccuracy()
-	{
-		mTempAccuracy = mTempAccuracy.decrementStage();
-	}
-
-	public void increaseTempEvasion()
-	{
-		mTempEvasion = mTempEvasion.incrementStage();
-	}
-
-	public void decreaseTempEvaion()
-	{
-		mTempEvasion = mTempEvasion.decrementStage();
+			default:
+				return false;
+		}
+		
+		return true;
 	}
 
 	/*
