@@ -1,8 +1,8 @@
 package application.anatures.moves.abstracts;
 
+import application.anatures.Anature;
 import application.anatures.moves.MoveResources;
 import application.enums.Stat;
-import application.interfaces.IAnature;
 
 public class DamageAndDecreaseStats extends DecreaseStats
 {
@@ -14,7 +14,7 @@ public class DamageAndDecreaseStats extends DecreaseStats
 	}
 
 	@Override
-	public void activateMove(IAnature source, IAnature target)
+	public void activateMove(Anature source, Anature target)
 	{
 		super.activateMove(source, target);
 		MoveResources.causeDamage(source, target, this);

@@ -98,7 +98,7 @@ public class Startup extends Application
 		mPlayer.addAnatures(third);
 		mPlayer.getAnatures().get(2).getStats().addExperience(630);
 
-		IAnature fourth = AnatureBuilder.createAnature(Species.Modenine, 16);
+		Anature fourth = AnatureBuilder.createAnature(getPlayerName(), Species.Modenine, 16);
 		mPlayer.addAnatures(fourth);
 		mPlayer.getAnatures().get(2).getStats().addExperience(630);
 

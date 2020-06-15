@@ -28,11 +28,6 @@ public class MoveSet implements Serializable
 
 	public boolean setMove(int moveNumber, IMove move)
 	{
-		if(move == null)
-		{
-			throw new IllegalArgumentException("Passed value \"move\" was null.");
-		}
-
 		switch(moveNumber)
 		{
 			case 1:

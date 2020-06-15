@@ -4,6 +4,7 @@ import application.anatures.Anature;
 import application.anatures.AnatureVariables;
 import application.anatures.abillities.NullAbility;
 import application.anatures.moves.abstracts.JustDamageDealing;
+import application.anatures.moves.uniques.NullMove;
 import application.anatures.movesets.MoveSet;
 import application.anatures.stats.StatsBuilder;
 import application.enums.AbilityIds;

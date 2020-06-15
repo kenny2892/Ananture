@@ -174,7 +174,7 @@ public class Move implements IMove, Serializable
 	 * PROTECTED METHODS
 	 */
 
-	public int calculateDamage(IAnature source, IAnature target, boolean isSpecialMove)
+	public int calculateDamage(Anature source, Anature target, boolean isSpecialMove)
 	{
 		IStats sourceStats = source.getStats();
 		IStats targetStats = target.getStats();

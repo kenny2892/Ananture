@@ -33,14 +33,14 @@ public class BattleResult
 		return mAnaturesToEvolve;
 	}
 	
-	public Entry<IAnature, Species> popEvolvedAnature()
+	public Entry<Anature, Species> popEvolvedAnature()
 	{
 		if(mAnaturesToEvolve == null || mAnaturesToEvolve.size() <= 0)
 		{
 			return null;
 		}
 		
-		Entry<IAnature, Species> toReturn = mAnaturesToEvolve.entrySet().iterator().next();
+		Entry<Anature, Species> toReturn = mAnaturesToEvolve.entrySet().iterator().next();
 		mAnaturesToEvolve.remove(toReturn.getKey());
 		
 		return toReturn;

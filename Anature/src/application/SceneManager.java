@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
+import application.anatures.Anature;
 import application.controllers.BattleController;
 import application.controllers.IntroController;
 import application.controllers.LoggerController;
@@ -20,7 +21,6 @@ import application.enums.LoggingTypes;
 import application.enums.SceneType;
 import application.enums.Species;
 import application.enums.WarpPoints;
-import application.interfaces.IAnature;
 import application.interfaces.ITrainer;
 import application.models.PathOneModel;
 import application.models.StarterTownModel;
@@ -138,7 +138,7 @@ public class SceneManager
 	{
 		if(result.hasEvolutions())
 		{
-			Entry<IAnature, Species> evolveEntry = result.popEvolvedAnature();
+			Entry<Anature, Species> evolveEntry = result.popEvolvedAnature();
 
 			changeScene(SceneType.Evolution, null, player);
 			mEvolutionController.startEvolution(player.getAnatures(), evolveEntry.getKey(), evolveEntry.getValue(), () ->

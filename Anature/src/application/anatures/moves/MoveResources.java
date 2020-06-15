@@ -1,13 +1,13 @@
 package application.anatures.moves;
 
+import application.anatures.Anature;
 import application.enums.Stat;
 import application.enums.StatusEffects;
 import application.enums.Type;
-import application.interfaces.IAnature;
 
 public class MoveResources
 {
-	public static void increaseStats(IAnature target, Stat... statsToRaise)
+	public static void increaseStats(Anature target, Stat... statsToRaise)
 	{
 		for(Stat stat : statsToRaise)
 		{
@@ -15,7 +15,7 @@ public class MoveResources
 		}
 	}
 
-	public static void decreaseStats(IAnature target, Stat... statsToLower)
+	public static void decreaseStats(Anature target, Stat... statsToLower)
 	{
 		for(Stat stat : statsToLower)
 		{
@@ -23,12 +23,12 @@ public class MoveResources
 		}
 	}
 
-	public static void causeDamage(IAnature source, IAnature target, Move move)
+	public static void causeDamage(Anature source, Anature target, Move move)
 	{
 		target.applyDamage(move.calculateDamage(source, target, !move.isPhysicalAttack()));
 	}
 
-	public static boolean applyStatus(IAnature target, StatusEffects toApply, double threshold)
+	public static boolean applyStatus(Anature target, StatusEffects toApply, double threshold)
 	{
 		if(canApplyStatus(target, toApply, threshold))
 		{
@@ -39,7 +39,7 @@ public class MoveResources
 		return false;
 	}
 
-	public static boolean canApplyStatus(IAnature target, StatusEffects toApply, double threshold)
+	public static boolean canApplyStatus(Anature target, StatusEffects toApply, double threshold)
 	{
 		Type primary = target.getPrimaryType();
 		Type secondary = target.getSecondaryType();
