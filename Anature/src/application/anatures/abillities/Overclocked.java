@@ -3,6 +3,7 @@ package application.anatures.abillities;
 import application.controllers.LoggerController;
 import application.enums.AbilityIds;
 import application.enums.LoggingTypes;
+import application.enums.Stat;
 import application.enums.TempStatsStages;
 import application.enums.Type;
 import application.interfaces.IAbility;
@@ -28,11 +29,10 @@ public class Overclocked implements IAbility
 			TempStatsStages attackStage = stats.getTempAttack();
 			TempStatsStages specialAttackStage = stats.getTempSpecialAttack();
 
-			stats.increaseTempAttack();
-			stats.increaseTempSpecialAttack();
+			stats.increaseTempStat(Stat.Attack);
+			stats.increaseTempStat(Stat.SpecialAttack);
 
-			if(attackStage != stats.getTempAttack()
-					|| specialAttackStage != stats.getTempSpecialAttack())
+			if(attackStage != stats.getTempAttack() || specialAttackStage != stats.getTempSpecialAttack())
 			{
 				return source.getName() + " became overclocked by the attack!";
 			}

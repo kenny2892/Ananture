@@ -1,6 +1,6 @@
 package application.trainers.ai.choice_objects;
 
-import application.anatures.moves.moves.Flail;
+import application.anatures.moves.uniques.Flail;
 import application.enums.AiChoice;
 import application.interfaces.AiChoiceObject;
 import application.interfaces.IMove;

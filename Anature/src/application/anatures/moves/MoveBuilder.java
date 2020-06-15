@@ -1,45 +1,9 @@
 package application.anatures.moves;
 
-import application.anatures.moves.moves.AntlerShot;
-import application.anatures.moves.moves.Coil;
-import application.anatures.moves.moves.DamageAndStatus;
-import application.anatures.moves.moves.Disguise;
-import application.anatures.moves.moves.DoublePunch;
-import application.anatures.moves.moves.Electrocution;
-import application.anatures.moves.moves.FactoryReset;
-import application.anatures.moves.moves.FiberOptic;
-import application.anatures.moves.moves.Flail;
-import application.anatures.moves.moves.Flamethrower;
-import application.anatures.moves.moves.FocusUp;
-import application.anatures.moves.moves.ForgottenAwakening;
-import application.anatures.moves.moves.Grumble;
-import application.anatures.moves.moves.Holler;
-import application.anatures.moves.moves.HoseDown;
-import application.anatures.moves.moves.JustDamageDealing;
-import application.anatures.moves.moves.Knock_Down;
-import application.anatures.moves.moves.Leen;
-import application.anatures.moves.moves.LightMissile;
-import application.anatures.moves.moves.Mystic_Power;
-import application.anatures.moves.moves.Nimbleness;
-import application.anatures.moves.moves.NullMove;
-import application.anatures.moves.moves.PocketSand;
-import application.anatures.moves.moves.Restore;
-import application.anatures.moves.moves.ScaryFace;
-import application.anatures.moves.moves.SharpenUp;
-import application.anatures.moves.moves.SkipTurn;
-import application.anatures.moves.moves.Slow_Spore;
-import application.anatures.moves.moves.Sludge_Missile;
-import application.anatures.moves.moves.Sludge_Slap;
-import application.anatures.moves.moves.Slumber;
-import application.anatures.moves.moves.SmogWave;
-import application.anatures.moves.moves.Tackle;
-import application.anatures.moves.moves.TailBlock;
-import application.anatures.moves.moves.Tornado;
-import application.anatures.moves.moves.Upgrade;
-import application.anatures.moves.moves.WaterToss;
-import application.anatures.moves.moves.WiredMess;
-import application.anatures.moves.moves.Zen;
+import application.anatures.moves.abstracts.*;
+import application.anatures.moves.uniques.*;
 import application.enums.MoveIds;
+import application.enums.Stat;
 import application.enums.StatusEffects;
 import application.enums.Type;
 import application.interfaces.IBuilder;
@@ -146,10 +110,13 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 	@SuppressWarnings("unchecked")
 	private void generateNewMove()
 	{
+		boolean affectUser = false;
+		boolean affectEnemy = true;
+		
 		switch(mMoveId)
 		{
 			case Grumble:
-				mMove = (M) new Grumble();
+				mMove = (M) new DecreaseStats(affectEnemy, Stat.Attack);
 				break;
 
 			case Double_Punch:
@@ -157,11 +124,11 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Flamethrower:
-				mMove = (M) new Flamethrower();
+				mMove = (M) new DamageAndStatus(StatusEffects.Burn, 0.6);
 				break;
 
 			case Pocket_Sand:
-				mMove = (M) new PocketSand();
+				mMove = (M) new DecreaseStats(affectEnemy, Stat.Accuracy);
 				break;
 
 			case Skip_Turn:
@@ -173,7 +140,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Tackle:
-				mMove = (M) new Tackle();
+				mMove = (M) new JustDamageDealing();
 				break;
 
 			case Antler_Shot:
@@ -213,15 +180,15 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Forgotten_Awakening:
-				mMove = (M) new ForgottenAwakening();
+				mMove = (M) new DamageAndIncreaseStats(affectUser, Stat.Attack, Stat.Defense);
 				break;
 
 			case Healing_Winds:
-				mMove = (M) new JustDamageDealing();
+				mMove = (M) new HealingWinds();
 				break;
 
 			case Scary_Face:
-				mMove = (M) new ScaryFace();
+				mMove = (M) new DecreaseStats(affectEnemy, Stat.Defense, Stat.Defense);
 				break;
 
 			case Smog_Wave:
@@ -229,15 +196,15 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Light_Missle:
-				mMove = (M) new LightMissile();
+				mMove = (M) new DamageAndDecreaseStats(affectEnemy, Stat.SpecialDefense);
 				break;
 
 			case Holler:
-				mMove = (M) new Holler();
+				mMove = (M) new DecreaseStats(affectEnemy, Stat.Attack, Stat.Attack);
 				break;
 
 			case Leen:
-				mMove = (M) new Leen();
+				mMove = (M) new DecreaseStats(affectEnemy, Stat.Defense);
 				break;
 
 			case Lightning:
@@ -257,11 +224,11 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Water_Toss:
-				mMove = (M) new WaterToss();
+				mMove = (M) new DamageAndDecreaseStats(affectEnemy, Stat.Accuracy);
 				break;
 
 			case Hose_Down:
-				mMove = (M) new HoseDown();
+				mMove = (M) new DecreaseStats(affectEnemy, Stat.Defense, Stat.SpecialDefense);
 				break;
 
 			case Water_Fang:
@@ -281,7 +248,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Tornado:
-				mMove = (M) new Tornado();
+				mMove = (M) new DamageAndDecreaseStats(affectEnemy, Stat.Accuracy);
 				break;
 
 			case Coil:
@@ -297,7 +264,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Sharpen_Up:
-				mMove = (M) new SharpenUp();
+				mMove = (M) new IncreaseStats(affectUser, Stat.Attack, Stat.SpecialAttack);
 				break;
 
 			case Tail_Slap:
@@ -309,7 +276,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Disguise:
-				mMove = (M) new Disguise();
+				mMove = (M) new IncreaseStats(affectUser, Stat.Evasion);
 				break;
 
 			case Tail_Slam:
@@ -317,7 +284,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Focus_Up:
-				mMove = (M) new FocusUp();
+				mMove = (M) new IncreaseStats(affectUser, Stat.Attack, Stat.Defense);
 				break;
 
 			case Acid_Spit:
@@ -357,7 +324,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Fiber_Optic:
-				mMove = (M) new FiberOptic();
+				mMove = (M) new IncreaseStats(affectUser, Stat.Speed);
 				break;
 
 			case Wired_Mess:
@@ -369,7 +336,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Nimbleness:
-				mMove = (M) new Nimbleness();
+				mMove = (M) new IncreaseStats(affectUser, Stat.Speed, Stat.Speed);
 				break;
 
 			case Miss_Direction:
@@ -377,11 +344,11 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Zen:
-				mMove = (M) new Zen();
+				mMove = (M) new IncreaseStats(affectUser, Stat.SpecialAttack, Stat.SpecialDefense);
 				break;
 
 			case Slumber:
-				mMove = (M) new Slumber();
+				mMove = (M) new JustStatus(StatusEffects.Sleep, 0.1);
 				break;
 
 			case Channel:
@@ -393,7 +360,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Mystic_Power:
-				mMove = (M) new Mystic_Power();
+				mMove = (M) new IncreaseStats(affectUser, Stat.Defense, Stat.SpecialDefense);
 				break;
 
 			case Focused_Heatbutt:
@@ -401,7 +368,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Knock_Down:
-				mMove = (M) new Knock_Down();
+				mMove = (M) new DamageAndDecreaseStats(affectEnemy, Stat.Speed);
 				break;
 
 			case Tremor:
@@ -409,11 +376,11 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Sludge_Missile:
-				mMove = (M) new Sludge_Missile();
+				mMove = (M) new DamageAndDecreaseStats(affectEnemy, Stat.Accuracy);
 				break;
 
 			case Sludge_Slap:
-				mMove = (M) new Sludge_Slap();
+				mMove = (M) new DamageAndDecreaseStats(affectEnemy, Stat.Accuracy, Stat.Accuracy);
 				break;
 
 			case Leaf_Storm:
@@ -429,7 +396,7 @@ public class MoveBuilder<M extends Move> implements IBuilder<M>
 				break;
 
 			case Slow_Spore:
-				mMove = (M) new Slow_Spore();
+				mMove = (M) new DecreaseStats(affectEnemy, Stat.Speed);
 				break;
 
 			default:
