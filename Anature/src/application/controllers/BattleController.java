@@ -30,21 +30,23 @@ import application.enums.BattleAnimationType;
 import application.enums.BattleChoice;
 import application.enums.BattleEndMethods;
 import application.enums.Gender;
-import application.enums.ItemIds;
 import application.enums.LoggingTypes;
 import application.enums.Species;
 import application.enums.Stat;
 import application.enums.StatusEffects;
 import application.enums.TrainerIds;
 import application.enums.Type;
+import application.enums.items.AnacubeId;
+import application.enums.items.HealthPotionId;
 import application.interfaces.AiChoiceObject;
 import application.interfaces.IItem;
 import application.interfaces.IMove;
-import application.interfaces.ITrainer;
+import application.items.Anacube;
 import application.items.HealthPotionBase;
 import application.player.Backpack;
 import application.player.Player;
-import application.pools.ItemPool;
+import application.pools.items.Items;
+import application.trainers.Trainer;
 import application.views.elements.AnatureSlot;
 import application.views.elements.HpBar;
 import application.views.elements.ResizableImage;
@@ -116,6 +118,7 @@ public class BattleController
 
 	@FXML private ImageView mItemSelectionBg, mItemDialogue, mSelectedItem, mItemBackBtn, mItemUseBtn, mItemPotionsTab, mItemAnaCubeTab, mStatusTab;
 	@FXML private ListView<String> mItemList;
+	private ArrayList<DisplayItem<?>> mItemDisplayList;
 	@FXML private Rectangle mItemListBg;
 	@FXML private ImageView mItemPotionTabImg, mItemAnaCubeTabImg, mSelectedItemImg;
 	@FXML private Text mSelectedItemName;
@@ -139,7 +142,7 @@ public class BattleController
 	private ObjectProperty<Font> m55FontProperty, m65FontProperty, m75FontProperty, m85FontProperty, m115FontProperty;
 
 	private FightManager mFightManager;
-	private ITrainer mEnemyTrainer;
+	private Trainer mEnemyTrainer;
 	private Player mPlayer;
 	private ClickQueue mClickQueue;
 	private AnatureSlot mSlotOne, mSlotTwo, mSlotThree, mSlotFour, mSlotFive, mSlotSix;
@@ -157,6 +160,7 @@ public class BattleController
 		mToEnd = false;
 		mPlayerFaintSequenceActive = false;
 		mShowPotionTab = true;
+		mItemDisplayList = new ArrayList<DisplayItem<?>>();
 
 		initializeIntegersPorperties();
 		initializeDoublePorperties();
@@ -519,7 +523,7 @@ public class BattleController
 	private void onEnemyAnatureDeath()
 	{
 		boolean isThereAliveAnatureInParty = false;
-		for(Anature anature : mEnemyTrainer.getAnatureParty())
+		for(Anature anature : mEnemyTrainer.getAnatures())
 		{
 			if(anature.getStats().getCurrentHitPoints() > 0)
 			{
@@ -984,9 +988,9 @@ public class BattleController
 		return value;
 	}
 
-	public void updateElements(Player player, ITrainer enemyTrainer)
+	public void updateElements(Player player, Trainer enemyTrainer)
 	{
-		Anature enemyCurr = enemyTrainer.getAnatureParty().get(0);
+		Anature enemyCurr = enemyTrainer.getAnatures().get(0);
 		Anature playerCurr = player.getAnatures().get(0);
 
 		mPlayer = player;
@@ -1005,11 +1009,11 @@ public class BattleController
 
 		startIntro(player, enemyTrainer, enemyCurr);
 
-		mFightManager = new FightManager(player.getAnatures(), enemyTrainer.getAnatureParty());
+		mFightManager = new FightManager(player.getAnatures(), enemyTrainer.getAnatures());
 		mThrownAnacubeImg.setVisible(false);
 	}
 
-	private void startIntro(Player player, ITrainer enemyTrainer, Anature enemyCurr)
+	private void startIntro(Player player, Trainer enemyTrainer, Anature enemyCurr)
 	{
 		mClickQueue.enqueue(new Runnable()
 		{
@@ -1325,6 +1329,7 @@ public class BattleController
 	private void updateBagMenu()
 	{
 		ObservableList<String> items = mItemList.getItems();
+		mItemDisplayList.clear();
 		items.clear();
 
 		Backpack backpack = mPlayer.getBackpack();
@@ -1345,59 +1350,142 @@ public class BattleController
 		mItemList.setItems(items);
 	}
 
+	public abstract class DisplayItem<D extends Enum<?>>
+	{
+		private D disaplyItem;
+
+		public DisplayItem(D dispalyItem)
+		{
+			this.disaplyItem = dispalyItem;
+		}
+
+		public D getDisplayItem()
+		{
+			return this.disaplyItem;
+		}
+
+		public abstract String toString();
+	}
+
 	private void updatePotionMenu(ObservableList<String> items, Backpack backpack)
 	{
-		int potionCount = backpack.getPotionCount();
-		int greatPotionCount = backpack.getGreatPotionCount();
-		int ultraPotionCount = backpack.getUltraPotionCount();
-		int masterPotionCount = backpack.getMasterPotionCount();
+		int potionCount = backpack.getHealthPotionCount(HealthPotionId.Potion);
+		int greatPotionCount = backpack.getHealthPotionCount(HealthPotionId.Great_Potion);
+		int ultraPotionCount = backpack.getHealthPotionCount(HealthPotionId.Ultra_Potion);
+		int masterPotionCount = backpack.getHealthPotionCount(HealthPotionId.Master_Potion);
 
 		if(potionCount > 0)
 		{
-			items.add("Potions " + potionCount + "x");
+			mItemDisplayList.add(new DisplayItem<HealthPotionId>(HealthPotionId.Potion)
+			{
+				@Override
+				public String toString()
+				{
+					return "Potions " + potionCount + "x";
+				}
+			});
 		}
 
 		if(greatPotionCount > 0)
 		{
-			items.add("Great Potions " + greatPotionCount + "x");
+			mItemDisplayList.add(new DisplayItem<HealthPotionId>(HealthPotionId.Great_Potion)
+			{
+				@Override
+				public String toString()
+				{
+					return "Great Potions " + greatPotionCount + "x";
+				}
+			});
 		}
 
 		if(ultraPotionCount > 0)
 		{
-			items.add("Ultra Potions " + ultraPotionCount + "x");
+			mItemDisplayList.add(new DisplayItem<HealthPotionId>(HealthPotionId.Ultra_Potion)
+			{
+				@Override
+				public String toString()
+				{
+					return "Ultra Potions " + ultraPotionCount + "x";
+				}
+			});
 		}
 
 		if(masterPotionCount > 0)
 		{
-			items.add("Master Potions " + masterPotionCount + "x");
+			mItemDisplayList.add(new DisplayItem<HealthPotionId>(HealthPotionId.Master_Potion)
+			{
+				@Override
+				public String toString()
+				{
+					return "Master Potions " + masterPotionCount + "x";
+				}
+			});
+		}
+
+		for(DisplayItem<?> displayItem : mItemDisplayList)
+		{
+			items.add(displayItem.toString());
 		}
 	}
 
 	private void updateAnacubeMenu(ObservableList<String> items, Backpack backpack)
 	{
-		int anacubeCount = backpack.getAnacubeCount(ItemIds.Anacube);
-		int superAnacubeCount = backpack.getAnacubeCount(ItemIds.Super_Anacube);
-		int hyperAnacubeCount = backpack.getAnacubeCount(ItemIds.Hyper_Anacube);
-		int maxAnacubeCount = backpack.getAnacubeCount(ItemIds.Max_Anacube);
+		int anacubeCount = backpack.getAnacubeCount(AnacubeId.Anacube);
+		int superAnacubeCount = backpack.getAnacubeCount(AnacubeId.Super_Anacube);
+		int hyperAnacubeCount = backpack.getAnacubeCount(AnacubeId.Hyper_Anacube);
+		int maxAnacubeCount = backpack.getAnacubeCount(AnacubeId.Max_Anacube);
 
 		if(anacubeCount > 0)
 		{
-			items.add("Anacubes " + anacubeCount + "x");
+			mItemDisplayList.add(new DisplayItem<AnacubeId>(AnacubeId.Anacube)
+			{
+				@Override
+				public String toString()
+				{
+					return "Anacubes " + anacubeCount + "x";
+				}
+			});
 		}
 
 		if(superAnacubeCount > 0)
 		{
-			items.add("Super Anacubes " + superAnacubeCount + "x");
+			mItemDisplayList.add(new DisplayItem<AnacubeId>(AnacubeId.Super_Anacube)
+			{
+				@Override
+				public String toString()
+				{
+					return "Super Anacubes " + superAnacubeCount + "x";
+				}
+			});
 		}
 
 		if(hyperAnacubeCount > 0)
 		{
-			items.add("Hyper Anacubes " + hyperAnacubeCount + "x");
+			mItemDisplayList.add(new DisplayItem<AnacubeId>(AnacubeId.Hyper_Anacube)
+			{
+				@Override
+				public String toString()
+				{
+					return "Hyper Anacubes " + hyperAnacubeCount + "x";
+				}
+			});
 		}
 
 		if(maxAnacubeCount > 0)
 		{
-			items.add("Max Anacubes " + maxAnacubeCount + "x");
+			mItemDisplayList.add(new DisplayItem<AnacubeId>(AnacubeId.Max_Anacube)
+			{
+				@Override
+				public String toString()
+				{
+					return "Max Anacubes " + maxAnacubeCount + "x";
+				}
+			});
+		}
+
+		for(DisplayItem<?> displayItem : mItemDisplayList)
+		{
+			items.add(displayItem.toString());
 		}
 	}
 
@@ -1435,73 +1523,82 @@ public class BattleController
 
 	private void onItemSelect()
 	{
-		String selectedItem = mItemList.getSelectionModel().getSelectedItem();
+		String displayString = mItemList.getSelectionModel().getSelectedItem();
 
-		if(selectedItem == null)
+		if(displayString == null)
 			return;
+
+		DisplayItem<?> selectedDispalyItem = null;
+
+		for(DisplayItem<?> displayItem : mItemDisplayList)
+		{
+			if(displayString.equals(displayItem.toString()))
+			{
+				selectedDispalyItem = displayItem;
+				break;
+			}
+		}
 
 		if(mShowPotionTab)
 		{
-			updateItemSelectPotion(selectedItem);
+			updateItemSelectPotion((HealthPotionId) selectedDispalyItem.getDisplayItem());
 		}
 
 		else
 		{
-			updateItemSelectAnacube(selectedItem);
+			updateItemSelectAnacube((AnacubeId) selectedDispalyItem.getDisplayItem());
 		}
 	}
 
-	private void updateItemSelectPotion(String selectedItem)
+	private void updateItemSelectPotion(HealthPotionId selectedItem)
 	{
-		if(selectedItem.startsWith("Potions"))
+		switch(selectedItem)
 		{
-			mSelectedItemImg.setImage(mItemPotion);
-			mSelectedItemTxt.set("Potion");
-		}
+			case Potion:
+				mSelectedItemImg.setImage(mItemPotion);
+				mSelectedItemTxt.set(selectedItem.toString());
+				break;
 
-		else if(selectedItem.startsWith("Great"))
-		{
-			mSelectedItemImg.setImage(mItemGreatPotion);
-			mSelectedItemTxt.set("Great Potion");
-		}
+			case Great_Potion:
+				mSelectedItemImg.setImage(mItemGreatPotion);
+				mSelectedItemTxt.set(selectedItem.toString());
+				break;
 
-		else if(selectedItem.startsWith("Ultra"))
-		{
-			mSelectedItemImg.setImage(mItemUltraPotion);
-			mSelectedItemTxt.set("Ultra Potion");
-		}
+			case Ultra_Potion:
+				mSelectedItemImg.setImage(mItemUltraPotion);
+				mSelectedItemTxt.set(selectedItem.toString());
+				break;
 
-		else if(selectedItem.startsWith("Master"))
-		{
-			mSelectedItemImg.setImage(mItemMasterPotion);
-			mSelectedItemTxt.set("Master Potion");
+			case Master_Potion:
+				mSelectedItemImg.setImage(mItemMasterPotion);
+				mSelectedItemTxt.set(selectedItem.toString());
+				break;
 		}
 	}
 
-	private void updateItemSelectAnacube(String selectedItem)
+	private void updateItemSelectAnacube(AnacubeId selectedItem)
 	{
-		if(selectedItem.startsWith("Anacube"))
+		switch(selectedItem)
 		{
-			mSelectedItemImg.setImage(mItemAnacube);
-			mSelectedItemTxt.set("Anacube");
-		}
+			case Anacube:
+				mSelectedItemImg.setImage(mItemAnacube);
+				mSelectedItemTxt.set(selectedItem.toString());
+				break;
 
-		else if(selectedItem.startsWith("Super"))
-		{
-			mSelectedItemImg.setImage(mItemSuperAnacube);
-			mSelectedItemTxt.set("Super Anacube");
-		}
+			case Super_Anacube:
+				mSelectedItemImg.setImage(mItemSuperAnacube);
+				mSelectedItemTxt.set(selectedItem.toString());
+				break;
 
-		else if(selectedItem.startsWith("Hyper"))
-		{
-			mSelectedItemImg.setImage(mItemHyperAnacube);
-			mSelectedItemTxt.set("Hyper Anacube");
-		}
+			case Hyper_Anacube:
+				mSelectedItemImg.setImage(mItemHyperAnacube);
+				mSelectedItemTxt.set(selectedItem.toString());
+				break;
 
-		else if(selectedItem.startsWith("Max"))
-		{
-			mSelectedItemImg.setImage(mItemMaxAnacube);
-			mSelectedItemTxt.set("Max Anacube");
+			case Max_Anacube:
+				mSelectedItemImg.setImage(mItemMaxAnacube);
+				mSelectedItemTxt.set(selectedItem.toString());
+				break;
 		}
 	}
 
@@ -1723,12 +1820,23 @@ public class BattleController
 				break;
 
 			case Item: // TODO Change it so u can use items on other anatures
-				String id = mItemList.getSelectionModel().getSelectedItem();
+				String displayString = mItemList.getSelectionModel().getSelectedItem();
+				DisplayItem<?> selectedDispalyItem = null;
 
-				IItem selectedItem = ItemPool.getItem(id);
-				if(id.contains("Anacube"))
+				for(DisplayItem<?> displayItem : mItemDisplayList)
 				{
-					onAnacubeUse(selectedItem, nextTurn);
+					if(displayString.equals(displayItem.toString()))
+					{
+						selectedDispalyItem = displayItem;
+						break;
+					}
+				}
+
+				IItem selectedItem = Items.getItem(selectedDispalyItem);
+
+				if(selectedItem instanceof Anacube)
+				{
+					onAnacubeUse((Anacube) selectedItem, (AnacubeId) selectedDispalyItem.getDisplayItem(), nextTurn);
 				}
 
 				else
@@ -1738,7 +1846,7 @@ public class BattleController
 						ItemResult result = mFightManager.itemUse(true, mPlayer.getSelectedIndex(), selectedItem);
 						healthGain(result, mPlayerHp);
 
-						mPlayer.getBackpack().removeItem(selectedItem.getItemId());
+						mPlayer.getBackpack().removeItem(selectedItem);
 						updateBagMenu();
 						activateAfterTurn(nextTurn);
 					}, "Player Potion Use");
@@ -2170,16 +2278,16 @@ public class BattleController
 		increase.play();
 	}
 
-	private void onAnacubeUse(IItem selectedItem, Runnable nextTurn)
+	private void onAnacubeUse(Anacube selectedItem, AnacubeId anacubeId, Runnable nextTurn)
 	{
 		mClickQueue.enqueue(() ->
 		{
 			ItemResult result = mFightManager.itemUse(false, 0, selectedItem);
 			AnacubeResults catchResult = result.getCatchResults();
 
-			showAnacube(selectedItem);
+			showAnacube(anacubeId);
 
-			mPlayer.getBackpack().removeItem(selectedItem.getItemId());
+			mPlayer.getBackpack().removeItem(selectedItem);
 			updateBagMenu();
 
 			AnacubeThrow animation = new AnacubeThrow(mThrownAnacubeImg, Duration.seconds(2));
@@ -2242,11 +2350,11 @@ public class BattleController
 		return mEnemyTrainer.getId() == TrainerIds.Wild && mPlayer.getAnatures().size() < 6;
 	}
 
-	private void showAnacube(IItem selectedItem)
+	private void showAnacube(AnacubeId selectedItem)
 	{
 		mThrownAnacubeImg.setVisible(true);
 
-		switch(selectedItem.getItemId())
+		switch(selectedItem)
 		{
 			case Super_Anacube:
 				mThrownAnacubeImg.setImage(mItemSuperAnacube);

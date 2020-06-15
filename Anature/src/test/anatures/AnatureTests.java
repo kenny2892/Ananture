@@ -187,14 +187,9 @@ public class AnatureTests
 
 			@DisplayName("with Species Values")
 			@ParameterizedTest(name = "sets species to \"{0}\"")
-			@EnumSource(value = Species.class,
-						names = { "NotSet" },
-						mode = EnumSource.Mode.EXCLUDE)
+			@EnumSource(Species.class)
 			void SetSpecies_WithEachType_SetsSpeciesValue(Species testSpecies)
 			{
-				// exclude check
-				if(testSpecies.equals(Species.NotSet))
-					Assert.fail("Null equivalent Species value was not excluded from test.");
 
 				// act
 				Anature sut = TestObjects.getAnature().getClone().setSpecies(testSpecies);

@@ -1,11 +1,11 @@
 package application.controllers.menus;
 
 import application.controllers.LoggerController;
-import application.enums.ItemIds;
 import application.enums.LoggingTypes;
+import application.enums.items.HealthPotionId;
 import application.interfaces.IHealthPotion;
 import application.player.Player;
-import application.pools.ItemPool;
+import application.pools.items.HealthPotionPool;
 import application.views.elements.ShoppingMenu;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
@@ -106,43 +106,43 @@ public class ShoppingMenuController
 			mDequeue = dequeue;
 		}
 	}
-	
+
 	private void buyItems()
 	{
 		String selectedItem = mView.getSelectedItemName();
-		ItemIds potionId = null;
+		HealthPotionId potionId = null;
 		IHealthPotion potionToAdd = null;
-		
+
 		if(selectedItem == null)
 			return;
 
 		if(selectedItem.startsWith("Potions"))
 		{
-			potionId = ItemIds.Potion;
+			potionId = HealthPotionId.Potion;
 		}
 
 		else if(selectedItem.startsWith("Great"))
 		{
-			potionId = ItemIds.Great_Potion;
+			potionId = HealthPotionId.Great_Potion;
 		}
 
 		else if(selectedItem.startsWith("Ultra"))
 		{
-			potionId = ItemIds.Ultra_Potion;
+			potionId = HealthPotionId.Ultra_Potion;
 		}
 
 		else if(selectedItem.startsWith("Master"))
 		{
-			potionId = ItemIds.Master_Potion;
+			potionId = HealthPotionId.Master_Potion;
 		}
-		
-		potionToAdd = ItemPool.getHealthPotion(potionId);
-		
+
+		potionToAdd = HealthPotionPool.getHealthPotion(potionId);
+
 		for(int i = 0; i < mView.getAmount(); i++)
 		{
 			mPlayer.getBackpack().addItem(potionToAdd);
 		}
-		
+
 		mDequeue.run();
 	}
 }

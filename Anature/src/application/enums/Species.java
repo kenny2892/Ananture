@@ -2,7 +2,6 @@ package application.enums;
 
 public enum Species
 {
-	NotSet,
 	Null,
 	Sardino,
 	Midaqua,
@@ -26,7 +25,6 @@ public enum Species
 
 	public String toString()
 	{
-		return this.name()
-				.replaceAll("_", " ");
+		return this.name().replaceAll("_", " ");
 	}
 }

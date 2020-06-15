@@ -3,14 +3,14 @@ package application.models;
 import java.io.Serializable;
 
 import application.enums.TrainerIds;
-import application.interfaces.ITrainer;
+import application.trainers.Trainer;
 import application.trainers.TrainerBuilder;
 
 public class PathOneModel implements Serializable
 {
 	private static final long serialVersionUID = -3494030378374805579L;
 
-	private ITrainer mKelly;
+	private Trainer mKelly;
 
 	public PathOneModel()
 	{
@@ -20,7 +20,7 @@ public class PathOneModel implements Serializable
 		}
 	}
 
-	public ITrainer getKelly()
+	public Trainer getKelly()
 	{
 		return mKelly;
 	}

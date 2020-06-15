@@ -15,15 +15,17 @@ import application.anatures.Anature;
 import application.anatures.AnatureBuilder;
 import application.controllers.LoggerController;
 import application.controllers.results.BattleResult;
-import application.enums.ItemIds;
 import application.enums.LoggingTypes;
 import application.enums.SceneType;
 import application.enums.Species;
 import application.enums.WarpPoints;
-import application.interfaces.ITrainer;
+import application.enums.items.AnacubeId;
+import application.enums.items.HealthPotionId;
 import application.items.Anacube;
 import application.player.Player;
-import application.pools.ItemPool;
+import application.pools.items.HealthPotionPool;
+import application.pools.items.Items;
+import application.trainers.Trainer;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -73,7 +75,7 @@ public class Startup extends Application
 		mSceneManager.changeScene(id, warpPoint, mPlayer);
 	}
 
-	public static void startBattle(ITrainer toBattle)
+	public static void startBattle(Trainer toBattle)
 	{
 		mSceneManager.loadBattle(mPlayer, toBattle);
 	}
@@ -102,15 +104,15 @@ public class Startup extends Application
 		mPlayer.addAnatures(fourth);
 		mPlayer.getAnatures().get(2).getStats().addExperience(630);
 
-		mPlayer.getBackpack().addItem(ItemPool.getHealthPotion(ItemIds.Potion));
-		mPlayer.getBackpack().addItem(ItemPool.getHealthPotion(ItemIds.Great_Potion));
-		mPlayer.getBackpack().addItem(ItemPool.getHealthPotion(ItemIds.Ultra_Potion));
-		mPlayer.getBackpack().addItem(ItemPool.getHealthPotion(ItemIds.Master_Potion));
+		mPlayer.getBackpack().addItem(HealthPotionPool.getHealthPotion(HealthPotionId.Potion));
+		mPlayer.getBackpack().addItem(HealthPotionPool.getHealthPotion(HealthPotionId.Great_Potion));
+		mPlayer.getBackpack().addItem(HealthPotionPool.getHealthPotion(HealthPotionId.Ultra_Potion));
+		mPlayer.getBackpack().addItem(HealthPotionPool.getHealthPotion(HealthPotionId.Master_Potion));
 
-		mPlayer.getBackpack().addItem((Anacube) ItemPool.getItem(ItemIds.Anacube));
-		mPlayer.getBackpack().addItem((Anacube) ItemPool.getItem(ItemIds.Super_Anacube));
-		mPlayer.getBackpack().addItem((Anacube) ItemPool.getItem(ItemIds.Hyper_Anacube));
-		mPlayer.getBackpack().addItem((Anacube) ItemPool.getItem(ItemIds.Max_Anacube));
+		mPlayer.getBackpack().addItem((Anacube) Items.getItem(AnacubeId.Anacube));
+		mPlayer.getBackpack().addItem((Anacube) Items.getItem(AnacubeId.Super_Anacube));
+		mPlayer.getBackpack().addItem((Anacube) Items.getItem(AnacubeId.Hyper_Anacube));
+		mPlayer.getBackpack().addItem((Anacube) Items.getItem(AnacubeId.Max_Anacube));
 
 		LoggerController.logEvent(LoggingTypes.Misc, "Generated Demo Player");
 
@@ -404,10 +406,10 @@ public class Startup extends Application
 
 		for(int i = 0; i < 5; i++)
 		{
-			mPlayer.getBackpack().addItem((Anacube) ItemPool.getItem(ItemIds.Anacube));
-			mPlayer.getBackpack().addItem((Anacube) ItemPool.getItem(ItemIds.Super_Anacube));
-			mPlayer.getBackpack().addItem((Anacube) ItemPool.getItem(ItemIds.Hyper_Anacube));
-			mPlayer.getBackpack().addItem((Anacube) ItemPool.getItem(ItemIds.Max_Anacube));
+			mPlayer.getBackpack().addItem((Anacube) Items.getItem(AnacubeId.Anacube));
+			mPlayer.getBackpack().addItem((Anacube) Items.getItem(AnacubeId.Super_Anacube));
+			mPlayer.getBackpack().addItem((Anacube) Items.getItem(AnacubeId.Hyper_Anacube));
+			mPlayer.getBackpack().addItem((Anacube) Items.getItem(AnacubeId.Max_Anacube));
 		}
 
 		LoggerController.logEvent(LoggingTypes.Misc, "Generated New Game");

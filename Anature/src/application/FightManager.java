@@ -13,8 +13,8 @@ import application.enums.MoveIds;
 import application.enums.Stat;
 import application.interfaces.IItem;
 import application.interfaces.IMove;
-import application.interfaces.ITrainer;
 import application.pools.MovePool;
+import application.trainers.Trainer;
 import application.trainers.ai.choice_objects.AiSwitchChoice;
 
 public class FightManager
@@ -183,7 +183,7 @@ public class FightManager
 		return AbilityActivation.useEntryAbility(enemy.getAbility().getAbilityId(), enemy, player);
 	}
 
-	public void switchTrainerAnature(ITrainer enemyTrainer)
+	public void switchTrainerAnature(Trainer enemyTrainer)
 	{
 		AiSwitchChoice switchResult = enemyTrainer.chooseAnature(getPlayerAnature());
 		Anature toSwitch = switchResult.getChoiceObject();

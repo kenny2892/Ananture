@@ -7,7 +7,7 @@ import application.controllers.LoggerController;
 import application.enums.Direction;
 import application.enums.LoggingTypes;
 import application.enums.TrainerIds;
-import application.interfaces.ITrainer;
+import application.trainers.Trainer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Bounds;
@@ -25,21 +25,21 @@ public class TrainerSprite
 	private Rectangle mBoxCollision, mTopCollision, mBotCollision, mRightCollision, mLeftCollision;
 	private BooleanProperty mShowCollision;
 	private ArrayList<Node> mContent;
-	
+
 	private boolean mUp, mDown, mLeft, mRight, mCanMove;
 	private Direction mFacing;
 	private Image mWalkUpImg, mWalkDownImg, mWalkRightImg, mWalkLeftImg, mStandUpImg, mStandDownImg, mStandRightImg, mStandLeftImg;
-	
+
 	private int mFrame;
 	private double[][] mKeyFrames;
-	
+
 	private String[] mDialogue;
 	private boolean mHasBattle;
-	private ITrainer mTrainer;
-	private String mName;	
-	
-	public TrainerSprite(double x, double y, TrainerIds id, Direction facing, DoubleProperty zoom, BooleanProperty showProperty, 
-			double[][] keyFrames, int startingFrame, String[] dialogue, boolean hasBattle, String name)
+	private Trainer mTrainer;
+	private String mName;
+
+	public TrainerSprite(double x, double y, TrainerIds id, Direction facing, DoubleProperty zoom, BooleanProperty showProperty, double[][] keyFrames,
+			int startingFrame, String[] dialogue, boolean hasBattle, String name)
 	{
 		mId = id;
 		mShowCollision = showProperty;
@@ -47,17 +47,17 @@ public class TrainerSprite
 		mHasBattle = hasBattle;
 		mFacing = facing;
 		createSprites();
-		
+
 		if(name == null)
 		{
 			mName = mId.toString();
 		}
-		
+
 		else
 		{
 			mName = name;
 		}
-		
+
 		updateSprite();
 		mSprite.setFitHeight(29 * zoom.get());
 		mSprite.setFitWidth(24 * zoom.get());
@@ -71,7 +71,7 @@ public class TrainerSprite
 		mBoxCollision.yProperty().bind(mSprite.yProperty().add(mSprite.getFitHeight() * 0.7));
 		mBoxCollision.setFill(Color.BLUE);
 		mBoxCollision.visibleProperty().bind(showProperty);
-		
+
 		createCollisionBoxes();
 		mContent = new ArrayList<Node>();
 		mContent.add(mSprite);
@@ -79,12 +79,12 @@ public class TrainerSprite
 		mContent.add(mBotCollision);
 		mContent.add(mLeftCollision);
 		mContent.add(mRightCollision);
-		
+
 		mKeyFrames = keyFrames;
 		mFrame = startingFrame;
 		mCanMove = true;
 	}
-	
+
 	private void createCollisionBoxes()
 	{
 		mTopCollision = new Rectangle();
@@ -117,7 +117,7 @@ public class TrainerSprite
 		mRightCollision.heightProperty().bind(mBoxCollision.heightProperty());
 		mRightCollision.visibleProperty().bind(mShowCollision);
 	}
-	
+
 	private void createSprites()
 	{
 		String name = mId.toString().toLowerCase();
@@ -130,10 +130,10 @@ public class TrainerSprite
 		mStandDownImg = createImage(name + "/down_stand.png");
 		mStandRightImg = createImage(name + "/right_stand.png");
 		mStandLeftImg = createImage(name + "/left_stand.png");
-		
+
 		mSprite = new ImageView(mStandDownImg);
 	}
-	
+
 	private Image createImage(String filename)
 	{
 		String path = "/resources/images/trainers/" + filename;
@@ -143,76 +143,76 @@ public class TrainerSprite
 		{
 			new File(getClass().getResource(path).toExternalForm());
 		}
-		
+
 		catch(NullPointerException e)
 		{
 			path = "/resources/images/trainers/kelly/down_walk.gif";
 		}
 
 		toReturn = new Image(getClass().getResource(path).toExternalForm(), 100.0, 100.0, true, false);
-		
+
 		return toReturn;
 	}
-	
+
 	public void addToContainer(Pane pane)
 	{
 		pane.getChildren().addAll(mContent);
 	}
-	
+
 	public Rectangle getCollisionBox()
 	{
 		return mBoxCollision;
 	}
-	
+
 	public Bounds getInteractionBoxBounds()
 	{
 		return mSprite.getBoundsInParent();
 	}
-	
+
 	public int getIndex(Pane toCheck)
 	{
 		return toCheck.getChildren().indexOf(mSprite);
 	}
-	
+
 	public double getCollisionX()
 	{
 		return mBoxCollision.getX();
 	}
-	
+
 	public double getCollisionY()
 	{
 		return mBoxCollision.getY();
 	}
-	
+
 	public String getName()
 	{
 		return mName;
 	}
-	
-	public ITrainer getTrainerModel()
+
+	public Trainer getTrainerModel()
 	{
 		return mTrainer;
 	}
-	
-	public void setTrainerModel(ITrainer trainer)
+
+	public void setTrainerModel(Trainer trainer)
 	{
 		if(trainer == null)
 		{
 			LoggerController.logEvent(LoggingTypes.Error, "Tried giving trainer sprite a null model.");
 			return;
 		}
-		
+
 		mTrainer = trainer;
 	}
-	
+
 	public String[] getDialogue()
 	{
 		if(mHasBattle && !mTrainer.canBattle())
-			return new String[] {"Nice Battle!"};
+			return new String[] { "Nice Battle!" };
 
 		return mDialogue;
 	}
-	
+
 	public boolean interact(PlayerSprite playerSprite, Direction playerFacing)
 	{
 		mCanMove = false;
@@ -220,25 +220,25 @@ public class TrainerSprite
 		mDown = false;
 		mLeft = false;
 		mRight = false;
-		
+
 		if(playerSprite.getTopBounds().intersects(mBotCollision.getBoundsInParent()) && playerFacing == Direction.Up)
 		{
 			mFacing = Direction.Down;
 			return true;
 		}
-		
+
 		else if(playerSprite.getBotBounds().intersects(mTopCollision.getBoundsInParent()) && playerFacing == Direction.Down)
 		{
 			mFacing = Direction.Up;
 			return true;
 		}
-		
+
 		else if(playerSprite.getRightBounds().intersects(mLeftCollision.getBoundsInParent()) && playerFacing == Direction.Right)
 		{
 			mFacing = Direction.Left;
 			return true;
 		}
-		
+
 		else if(playerSprite.getLeftBounds().intersects(mRightCollision.getBoundsInParent()) && playerFacing == Direction.Left)
 		{
 			mFacing = Direction.Right;
@@ -248,7 +248,7 @@ public class TrainerSprite
 		mCanMove = true;
 		return false;
 	}
-	
+
 	public void update(PlayerSprite player, double speed, double elapsedSeconds)
 	{
 		if(mCanMove && mKeyFrames.length != 0)
@@ -256,7 +256,7 @@ public class TrainerSprite
 			updateFrame();
 
 			double deltaX = 0, deltaY = 0;
-			
+
 			if(mRight)
 			{
 				deltaX += speed;
@@ -284,37 +284,37 @@ public class TrainerSprite
 
 			mSprite.setX(mSprite.getX() + deltaX * elapsedSeconds);
 			mSprite.setY(mSprite.getY() + deltaY * elapsedSeconds);
-			
-			if(player.getTopBounds().intersects(mBotCollision.getBoundsInParent()) && mFacing == Direction.Down ||
-					player.getBotBounds().intersects(mTopCollision.getBoundsInParent()) && mFacing == Direction.Up)
+
+			if(player.getTopBounds().intersects(mBotCollision.getBoundsInParent()) && mFacing == Direction.Down
+					|| player.getBotBounds().intersects(mTopCollision.getBoundsInParent()) && mFacing == Direction.Up)
 			{
 				mSprite.setY(oldY);
 			}
-			
-			if(player.getRightBounds().intersects(mLeftCollision.getBoundsInParent()) && mFacing == Direction.Right ||
-					player.getLeftBounds().intersects(mRightCollision.getBoundsInParent()) && mFacing == Direction.Left)
+
+			if(player.getRightBounds().intersects(mLeftCollision.getBoundsInParent()) && mFacing == Direction.Right
+					|| player.getLeftBounds().intersects(mRightCollision.getBoundsInParent()) && mFacing == Direction.Left)
 			{
 				mSprite.setX(oldX);
 			}
-			
+
 			if(player.getTotalBounds().intersects(mBoxCollision.getBoundsInParent()))
 			{
 				mSprite.setX(oldX);
 				mSprite.setY(oldY);
 			}
 		}
-		
+
 		else
 		{
 			updateSprite();
 		}
 	}
-	
+
 	private void updateFrame()
 	{
 		int goalX = (int) mKeyFrames[mFrame][0];
 		int goalY = (int) mKeyFrames[mFrame][1];
-		
+
 		mUp = false;
 		mDown = false;
 		mRight = false;
@@ -323,40 +323,40 @@ public class TrainerSprite
 		if((goalX - 10 < mSprite.getX() && mSprite.getX() < goalX + 10) && (goalY - 10 < mSprite.getY() && mSprite.getY() < goalY + 10))
 		{
 			mFrame++;
-			
+
 			if(mFrame >= mKeyFrames.length)
 			{
 				mFrame = 0;
 			}
 		}
-		
+
 		else
 		{
 			int lastFrame = mFrame - 1;
-			
+
 			if(lastFrame < 0)
 			{
 				lastFrame = mKeyFrames.length - 1;
 			}
-			
+
 			double oldX = (int) mKeyFrames[lastFrame][0];
 			double oldY = (int) mKeyFrames[lastFrame][1];
-			
+
 			if(oldX > goalX)
 			{
 				mLeft = true;
 			}
-			
+
 			else if(oldX < goalX)
 			{
 				mRight = true;
 			}
-			
+
 			else if(oldY > goalY)
 			{
 				mUp = true;
 			}
-			
+
 			else if(oldY < goalY)
 			{
 				mDown = true;

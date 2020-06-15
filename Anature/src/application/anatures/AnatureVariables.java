@@ -13,10 +13,10 @@ import application.interfaces.stats.IStats;
 
 public abstract class AnatureVariables
 {
-	public String anatureName = "";
-	public String anatureOwnerName = "";
+	public String anatureName = null;
+	public String anatureOwnerName = null;
 	public boolean anatureIsShiny = false;
-	public Species anatureSpecies = Species.NotSet;
+	public Species anatureSpecies = null;
 	public Gender anatureGender = Gender.NotSet;
 	public Type anaturePrimaryType = Type.NotSet;
 	public Type anatureSecondaryType = Type.NotSet;
@@ -28,4 +28,5 @@ public abstract class AnatureVariables
 	public int anatureCatchRate = -1;
 
 	public abstract void getVariables();
+
 }
