@@ -2585,6 +2585,7 @@ public class BattleController
 			}
 		}
 
+		mPlayer.setSelectedIndex(0);
 		Startup.endBattle(new BattleResult(endMethod, evolutions));
 	}
 
