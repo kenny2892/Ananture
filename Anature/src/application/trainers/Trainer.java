@@ -8,14 +8,13 @@ import application.enums.TrainerIds;
 import application.interfaces.AiChoiceObject;
 import application.interfaces.IAI;
 import application.interfaces.IHealthPotion;
-import application.interfaces.ITrainer;
 import application.trainers.ai.choice_objects.AiHealthPotionChoice;
 import application.trainers.ai.choice_objects.AiMoveChoice;
 import application.trainers.ai.choice_objects.AiNoChoice;
 import application.trainers.ai.choice_objects.AiSwitchChoice;
 import javafx.scene.image.Image;
 
-class Trainer implements ITrainer, Serializable
+public class Trainer implements Serializable
 {
 	private static final long serialVersionUID = 5701627089126907149L;
 
@@ -27,22 +26,24 @@ class Trainer implements ITrainer, Serializable
 	private Anature mCurrentAnature;
 	private IAI mAI;
 
-	Trainer()
+	public Trainer(TrainerDefualtVariables trainerVariables)
 	{
-		mId = TrainerIds.Null;
-		mName = "";
-		mRewardForDefeat = -1;
-		mAnatures = null;
-		mHealthPotions = null;
-		mCurrentAnature = null;
-		mAI = null;
+		trainerVariables.getVariables();
+
+		setId(trainerVariables.trainerId);
+		setName(trainerVariables.trainerName);
+		setRewardForDefeat(trainerVariables.trainerRewardForDefeat);
+		setAnatures(trainerVariables.trainerAantures);
+		setHealthPotions(trainerVariables.trainerHealthPotions);
+		setCurrentAnature(trainerVariables.trainerCurrentAnature);
+		setAI(trainerVariables.trainerAI);
 	}
 
 	/*
-	 * PACKAGE SETS
+	 * PUBLIC SETS
 	 */
 
-	void setTrainerId(TrainerIds trainerId)
+	public Trainer setId(TrainerIds trainerId)
 	{
 		if(trainerId == null)
 		{
@@ -50,9 +51,11 @@ class Trainer implements ITrainer, Serializable
 		}
 
 		mId = trainerId;
+
+		return this;
 	}
 
-	void setTrainerName(String name)
+	public Trainer setName(String name)
 	{
 		if(name == null)
 		{
@@ -65,9 +68,11 @@ class Trainer implements ITrainer, Serializable
 		}
 
 		mName = name;
+
+		return this;
 	}
 
-	void setRewardForDefeat(int rewardAmount)
+	public Trainer setRewardForDefeat(int rewardAmount)
 	{
 		if(rewardAmount < 0)
 		{
@@ -75,31 +80,49 @@ class Trainer implements ITrainer, Serializable
 		}
 
 		mRewardForDefeat = rewardAmount;
+
+		return this;
 	}
 
-	void setAnatureParty(ArrayList<Anature> anatureBases)
+	public Trainer setAnatures(ArrayList<Anature> anatures)
 	{
 		// TODO talk with team about if we should allow the trainer anatures variable to
 		// be empty
-		if(anatureBases == null)
+		if(anatures == null)
 		{
 			throw new IllegalArgumentException("Passed value \"anatures\" was null.");
 		}
 
-		mAnatures = anatureBases;
+		mAnatures = anatures;
+
+		return this;
 	}
 
-	void setHealthPotions(ArrayList<IHealthPotion> healthPotionBases)
+	public Trainer setHealthPotions(ArrayList<IHealthPotion> healthPotions)
 	{
-		if(healthPotionBases == null)
+		if(healthPotions == null)
 		{
 			throw new IllegalArgumentException("Passed value \"potions\" was null.");
 		}
 
-		mHealthPotions = healthPotionBases;
+		mHealthPotions = healthPotions;
+
+		return this;
 	}
 
-	void setAI(IAI ai)
+	public Trainer setCurrentAnature(Anature anature)
+	{
+		if(anature == null)
+		{
+			throw new IllegalArgumentException("Passed value \"anature\" was null.");
+		}
+
+		mCurrentAnature = anature;
+
+		return this;
+	}
+
+	public Trainer setAI(IAI ai)
 	{
 		if(ai == null)
 		{
@@ -107,53 +130,45 @@ class Trainer implements ITrainer, Serializable
 		}
 
 		mAI = ai;
+
+		return this;
 	}
 
 	/*
 	 * PUBLIC GETS
 	 */
 
-	@Override
 	public TrainerIds getId()
 	{
 		return mId;
 	}
 
-	@Override
 	public String getName()
 	{
 		return mName;
 	}
 
-	@Override
 	public int getRewardForDefeat()
 	{
 		return mRewardForDefeat;
 	}
 
-	@Override
-	public ArrayList<Anature> getAnatureParty()
+	public ArrayList<Anature> getAnatures()
 	{
 		return mAnatures;
 	}
 
-	@Override
 	public ArrayList<IHealthPotion> getHealthPotions()
 	{
 		return mHealthPotions;
 	}
 
-	@Override
 	public Anature getCurrentAnature()
 	{
 		return mCurrentAnature;
 	}
 
-	/*
-	 * PRIVATE GETS
-	 */
-
-	private IAI getTrainerAI()
+	public IAI getAI()
 	{
 		return mAI;
 	}
@@ -162,74 +177,60 @@ class Trainer implements ITrainer, Serializable
 	 * PUBLIC METHODS
 	 */
 
-	@Override
 	public Image getBattleSprite()
 	{
-		if(mId == TrainerIds.Wild)
+		if(getId() == TrainerIds.Wild)
 			return null;
 
-		return new Image(getClass().getResource("/resources/images/trainers/" + mId.toString().toLowerCase() + "/" + mId.toString() + ".png").toExternalForm(),
+		return new Image(
+				getClass().getResource("/resources/images/trainers/" + getId().toString().toLowerCase() + "/" + getId().toString() + ".png").toExternalForm(),
 				1000.0, 1000.0, true, false);
 	}
 
 	// TODO We need to get rid of this method
-	@Override
+	// TODO Should we have the AI decide which Anature to choose next?
 	public int getNextAnature(int index)
 	{
 		index++;
-		if(index >= mAnatures.size())
+		if(index >= getAnatures().size())
 		{
 			index = 0;
 		}
 		return index;
 	}
 
-	// TODO We need to move this method. It most likely does not belong here
-	@Override
-	public int getAnatureIndex(Anature anatureBase)
+	public int getAnatureIndex(Anature anature)
 	{
-		int index = 0;
-		for(Anature currentAnature : mAnatures)
-		{
-			if(currentAnature.equals(anatureBase))
-			{
-				return index;
-			}
-			index++;
-		}
-		return -1;
+		return getAnatures().indexOf(anature);
 	}
 
-	@Override
 	public boolean canBattle()
 	{
-		if(mAnatures.size() == 0)
-		{
-			return false;
-		}
+		boolean canBattle = false;
 
-		boolean result = false;
-		for(Anature anatureBase : mAnatures)
+		if(getAnatures().size() != 0)
 		{
-			if(anatureBase.getStats().getCurrentHitPoints() == 0)
+			for(Anature anature : getAnatures())
 			{
-				result = true;
-				break;
+				if(anature.getStats().getCurrentHitPoints() != 0)
+				{
+					canBattle = true;
+					break;
+				}
 			}
 		}
 
-		return !result;
+		return canBattle;
 	}
 
-	@Override
 	public AiChoiceObject<?> useTurn(Anature playerAnature)
 	{
-		boolean willUseHealthPotion = mAI.willUseHealthPotion(mHealthPotions, mCurrentAnature);
+		boolean willUseHealthPotion = getAI().willUseHealthPotion(getHealthPotions(), getCurrentAnature());
 
 		if(willUseHealthPotion)
 			return chooseHealthPotion();
 
-		boolean willSwitchAnature = mAI.willSwitchAnature(mAnatures, playerAnature, mCurrentAnature);
+		boolean willSwitchAnature = getAI().willSwitchAnature(getAnatures(), playerAnature, getCurrentAnature());
 
 		if(willSwitchAnature)
 			return chooseAnature(playerAnature);
@@ -241,67 +242,11 @@ class Trainer implements ITrainer, Serializable
 		return new AiNoChoice();
 	}
 
-	@Override
 	public AiSwitchChoice chooseAnature(Anature playerAnature)
 	{
-		Anature anatureToSwitchTo = mAI.chooseNewAnature(mAnatures, mCurrentAnature, playerAnature);
+		Anature anatureToSwitchTo = getAI().chooseNewAnature(getAnatures(), getCurrentAnature(), playerAnature);
 		AiSwitchChoice switchChoice = new AiSwitchChoice(anatureToSwitchTo);
 		return switchChoice;
-	}
-
-	@Override
-	public void setCurrentAnature(Anature currentAnature)
-	{
-		if(currentAnature == null)
-		{
-			throw new IllegalArgumentException("Passed value \"anature\" was null.");
-		}
-
-		mCurrentAnature = currentAnature;
-	}
-
-	/*
-	 * PACKAGE METHODS
-	 */
-
-	boolean canComplete()
-	{
-		if(mId.equals(TrainerIds.Null))
-		{
-			throw new IllegalStateException("The \"trainerId\" variable was never set during construction.");
-		}
-
-		if(getName().isEmpty())
-		{
-			throw new IllegalStateException("The \"trainerName\" variable was never set during construction.");
-		}
-
-		if(getRewardForDefeat() == -1)
-		{
-			throw new IllegalStateException("The \"rewardForDefeat\" variable was never set during construction.");
-		}
-
-		if(getAnatureParty() == null)
-		{
-			throw new IllegalStateException("The \"anatureParty\" variable was never set during construction.");
-		}
-
-		if(getHealthPotions() == null)
-		{
-			throw new IllegalStateException("The \"healthPotions\" variable was never set during construction.");
-		}
-
-		if(getCurrentAnature() == null)
-		{
-			throw new IllegalStateException("The \"currentAnature\" variable was never set during construction.");
-		}
-
-		if(getTrainerAI() == null)
-		{
-			throw new IllegalStateException("The \"Ai\" variable was never set during construction.");
-		}
-
-		return true;
 	}
 
 	/*
@@ -310,14 +255,14 @@ class Trainer implements ITrainer, Serializable
 
 	private AiHealthPotionChoice chooseHealthPotion()
 	{
-		IHealthPotion healthPotionToUse = mAI.healthPotionToUse(mHealthPotions, mCurrentAnature);
+		IHealthPotion healthPotionToUse = getAI().healthPotionToUse(getHealthPotions(), getCurrentAnature());
 		AiHealthPotionChoice healthPotionChoice = new AiHealthPotionChoice(healthPotionToUse);
 		return healthPotionChoice;
 	}
 
 	private AiMoveChoice chooseMove(Anature playerAnature)
 	{
-		AiMoveChoice moveChoice = mAI.chooseMove(mCurrentAnature, playerAnature);
+		AiMoveChoice moveChoice = getAI().chooseMove(getCurrentAnature(), playerAnature);
 		return moveChoice;
 	}
 }

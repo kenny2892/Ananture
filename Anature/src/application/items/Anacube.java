@@ -7,10 +7,9 @@ import application.anatures.Anature;
 import application.controllers.results.ItemResult;
 import application.enums.AnacubeResults;
 import application.enums.Gender;
-import application.enums.ItemIds;
 import application.enums.Stat;
 
-public class Anacube extends ItemBase implements Serializable
+public class Anacube extends Item implements Serializable
 {
 	private static final long serialVersionUID = 993885612208779369L;
 
@@ -155,12 +154,6 @@ public class Anacube extends ItemBase implements Serializable
 			default:
 				return 1;
 		}
-	}
-
-	@Override
-	public void setItemId(ItemIds id)
-	{
-		super.setItemId(id);
 	}
 
 	@Override

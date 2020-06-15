@@ -35,7 +35,7 @@ public class AnatureBuilder
 			@Override
 			public void getVariables()
 			{
-				anatureName = anatureSpecies.toString();
+				anatureName = species.toString();
 				anatureOwnerName = playerName;
 				anatureIsShiny = generateIsShiny();
 				anatureSpecies = species;
@@ -62,24 +62,23 @@ public class AnatureBuilder
 						anatureIndexNumber = Integer.parseInt(results.getString("IndexNumber"));
 						anatureCatchRate = Integer.parseInt(results.getString("CatchRate"));
 
-						anatureStats = new StatsBuilder().atLevel(level)
-								.withLevlingSpeed(generateLevelingSpeed(results.getString("LevelingSpeed")))
-								.withNature(generateRandomNature())
-								.withBaseExperience(Integer.parseInt(results.getString("BaseExperience")))
-								.withBaseHitPoints(Integer.parseInt(results.getString("BaseHitPoints")))
-								.withBaseAttack(Integer.parseInt(results.getString("BaseAttack")))
-								.withBaseDefense(Integer.parseInt(results.getString("BaseDefense")))
-								.withBaseSpecialAttack(Integer.parseInt(results.getString("BaseSpecialAttack")))
-								.withBaseSpecialDefense(Integer.parseInt(results.getString("BaseSpecialDefense")))
-								.withBaseSpeed(Integer.parseInt(results.getString("BaseSpeed")))
-								.withBaseAccuracy(Integer.parseInt(results.getString("BaseAccuracy")))
-								.withBaseEvasion(Integer.parseInt(results.getString("BaseEvasion")))
-								.withIVAttack(randomObject.nextInt(32))
-								.withIVDefense(randomObject.nextInt(32))
-								.withIVHitPoints(randomObject.nextInt(32))
-								.withIVSpecialAttack(randomObject.nextInt(32))
-								.withIVSpecialDefense(randomObject.nextInt(32))
-								.withIVSpeed(randomObject.nextInt(32))
+						anatureStats = new StatsBuilder().atLevel(level).withLevlingSpeed(generateLevelingSpeed(results.getString("LevelingSpeed"))) //
+								.withNature(generateRandomNature()) //
+								.withBaseExperience(Integer.parseInt(results.getString("BaseExperience"))) //
+								.withBaseHitPoints(Integer.parseInt(results.getString("BaseHitPoints"))) //
+								.withBaseAttack(Integer.parseInt(results.getString("BaseAttack"))) //
+								.withBaseDefense(Integer.parseInt(results.getString("BaseDefense"))) //
+								.withBaseSpecialAttack(Integer.parseInt(results.getString("BaseSpecialAttack"))) //
+								.withBaseSpecialDefense(Integer.parseInt(results.getString("BaseSpecialDefense"))) //
+								.withBaseSpeed(Integer.parseInt(results.getString("BaseSpeed"))) //
+								.withBaseAccuracy(Integer.parseInt(results.getString("BaseAccuracy"))) //
+								.withBaseEvasion(Integer.parseInt(results.getString("BaseEvasion"))) //
+								.withIVAttack(randomObject.nextInt(32)) //
+								.withIVDefense(randomObject.nextInt(32)) //
+								.withIVHitPoints(randomObject.nextInt(32)) //
+								.withIVSpecialAttack(randomObject.nextInt(32)) //
+								.withIVSpecialDefense(randomObject.nextInt(32)) //
+								.withIVSpeed(randomObject.nextInt(32)) //
 								.create();
 					}
 
@@ -102,9 +101,7 @@ public class AnatureBuilder
 			@Override
 			public void getVariables()
 			{
-				String name = toEvolve.getName()
-						.compareTo(toEvolve.getSpecies()
-								.toString()) == 0 ? evolveInto.toString() : toEvolve.getName();
+				String name = toEvolve.getName().compareTo(toEvolve.getSpecies().toString()) == 0 ? evolveInto.toString() : toEvolve.getName();
 
 				anatureName = name;
 				anatureOwnerName = toEvolve.getOwner();
@@ -133,10 +130,7 @@ public class AnatureBuilder
 						anatureIndexNumber = Integer.parseInt(results.getString("IndexNumber"));
 						anatureCatchRate = Integer.parseInt(results.getString("CatchRate"));
 
-						anatureStats = toEvolve.getStats()
-								.getClone()
-								.atLevel(toEvolve.getStats()
-										.getLevel())
+						anatureStats = toEvolve.getStats().getClone().atLevel(toEvolve.getStats().getLevel())
 								.withLevlingSpeed(generateLevelingSpeed(results.getString("LevelingSpeed")))
 								.withBaseExperience(Integer.parseInt(results.getString("BaseExperience")))
 								.withBaseHitPoints(Integer.parseInt(results.getString("BaseHitPoints")))
@@ -146,8 +140,7 @@ public class AnatureBuilder
 								.withBaseSpecialDefense(Integer.parseInt(results.getString("BaseSpecialDefense")))
 								.withBaseSpeed(Integer.parseInt(results.getString("BaseSpeed")))
 								.withBaseAccuracy(Integer.parseInt(results.getString("BaseAccuracy")))
-								.withBaseEvasion(Integer.parseInt(results.getString("BaseEvasion")))
-								.create();
+								.withBaseEvasion(Integer.parseInt(results.getString("BaseEvasion"))).create();
 					}
 
 					results.close();
@@ -246,9 +239,7 @@ public class AnatureBuilder
 		Random r = new Random();
 		toGenerate = r.nextInt(max);
 
-		while(toGenerate == otherIndex1
-				|| toGenerate == otherIndex2
-				|| toGenerate == otherIndex3)
+		while(toGenerate == otherIndex1 || toGenerate == otherIndex2 || toGenerate == otherIndex3)
 		{
 			toGenerate = r.nextInt(max);
 		}
@@ -278,8 +269,7 @@ public class AnatureBuilder
 		Random r = new Random();
 
 		ArrayList<String> abilities = new ArrayList<String>(Arrays.asList(possilbeAbilities.split(",")));
-		String abilityStr = abilities.get(r.nextInt(abilities.size()))
-				.replace(" ", "");
+		String abilityStr = abilities.get(r.nextInt(abilities.size())).replace(" ", "");
 		AbilityIds chosenAbility = AbilityIds.valueOf(abilityStr);
 
 		return AbilityPool.getAbility(chosenAbility);
@@ -290,8 +280,7 @@ public class AnatureBuilder
 		Type[] types = new Type[] { Type.NotSet, Type.NotSet };
 		String[] typesStringArray = typesString.split(",");
 
-		for(int i = 0; i < typesStringArray.length
-				&& i < 2; i++)
+		for(int i = 0; i < typesStringArray.length && i < 2; i++)
 		{
 			types[i] = Type.valueOf(typesStringArray[i]);
 		}

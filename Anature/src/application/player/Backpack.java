@@ -3,129 +3,191 @@ package application.player;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import application.controllers.LoggerController;
-import application.enums.ItemIds;
-import application.enums.LoggingTypes;
+import application.enums.items.AnacubeId;
+import application.enums.items.HealthPotionId;
 import application.interfaces.IHealthPotion;
+import application.interfaces.IItem;
 import application.items.Anacube;
+import application.pools.items.AnacubePool;
+import application.pools.items.HealthPotionPool;
 
 public class Backpack implements Serializable
 {
 	private static final long serialVersionUID = -2177964342378481427L;
 
-	private ArrayList<IHealthPotion> mPotionBag;
-	private ArrayList<Anacube> mAnacubeBag;
+	private ArrayList<IHealthPotion> mHealthPotions;
+	private ArrayList<Anacube> mAnacubes;
 
 	public Backpack()
 	{
-		mPotionBag = new ArrayList<IHealthPotion>();
-		mAnacubeBag = new ArrayList<Anacube>();
+		mHealthPotions = new ArrayList<IHealthPotion>();
+		mAnacubes = new ArrayList<Anacube>();
 	}
 
-	public void addItem(IHealthPotion toAdd)
-	{
-		if(toAdd == null)
-		{
-			LoggerController.logEvent(LoggingTypes.Error, "Null Item cannot be added.");
-			throw new IllegalArgumentException("Null Item cannot be added.");
-		}
+	/*
+	 * PUBLIC GETS
+	 */
 
-		mPotionBag.add(toAdd);
+	public ArrayList<IHealthPotion> getHealthPotions()
+	{
+		return new ArrayList<IHealthPotion>(mHealthPotions);
 	}
 
-	public void addItem(Anacube toAdd)
+	public ArrayList<Anacube> getAnacubes()
 	{
-		if(toAdd == null)
-		{
-			LoggerController.logEvent(LoggingTypes.Error, "Null Anacube cannot be added.");
-			throw new IllegalArgumentException("Null Anacube cannot be added.");
-		}
-
-		mAnacubeBag.add(toAdd);
+		return new ArrayList<Anacube>(mAnacubes);
 	}
 
-	public boolean removeItem(ItemIds idToRemove)
-	{
-		for(int i = 0; i < mPotionBag.size(); i++)
-		{
-			IHealthPotion iItem = mPotionBag.get(i);
+	/*
+	 * PUBLIC METHODS
+	 */
 
-			if(iItem.getItemId() == idToRemove)
-			{
-				mPotionBag.remove(i);
-				return true;
-			}
+	/*
+	 * addItem METHODS
+	 */
+
+	public boolean addItem(IItem item)
+	{
+		if(item == null)
+		{
+			throw new IllegalArgumentException("Passed value \"item\" was null.");
 		}
 
-		for(int i = 0; i < mAnacubeBag.size(); i++)
+		if(item instanceof IHealthPotion)
 		{
-			Anacube iItem = mAnacubeBag.get(i);
+			return addItem((IHealthPotion) item);
+		}
 
-			if(iItem.getItemId() == idToRemove)
-			{
-				mAnacubeBag.remove(i);
-				return true;
-			}
+		if(item instanceof Anacube)
+		{
+			return addItem((Anacube) item);
 		}
 
 		return false;
 	}
 
+	public boolean addItem(HealthPotionId healthPotionId)
+	{
+		IHealthPotion healthPotion = HealthPotionPool.getHealthPotion(healthPotionId);
+
+		return addItem(healthPotion);
+	}
+
+	public boolean addItem(AnacubeId anacubeId)
+	{
+		Anacube anacube = AnacubePool.getAnacube(anacubeId);
+
+		return addItem(anacube);
+	}
+
+	public boolean addItem(IHealthPotion healthPotion)
+	{
+		if(healthPotion == null)
+		{
+			throw new IllegalArgumentException("Passed value \"healthPotion\" was null.");
+		}
+
+		return mHealthPotions.add(healthPotion);
+	}
+
+	public boolean addItem(Anacube anacube)
+	{
+		if(anacube == null)
+		{
+			throw new IllegalArgumentException("Passed value \"anacube\" was null.");
+		}
+
+		return mAnacubes.add(anacube);
+	}
+
+	/*
+	 * removeItem() METHODS
+	 */
+
+	public boolean removeItem(IItem item)
+	{
+		if(item == null)
+		{
+			throw new IllegalArgumentException("Passed value \"item\" was null.");
+		}
+
+		if(item instanceof IHealthPotion)
+		{
+			return removeItem((IHealthPotion) item);
+		}
+
+		if(item instanceof Anacube)
+		{
+			return removeItem((Anacube) item);
+		}
+
+		return false;
+	}
+
+	public boolean removeItem(HealthPotionId healthPotionId)
+	{
+		IHealthPotion healthPotion = HealthPotionPool.getHealthPotion(healthPotionId);
+
+		return removeItem(healthPotion);
+	}
+
+	public boolean removeItem(AnacubeId anacubeId)
+	{
+		Anacube anacube = AnacubePool.getAnacube(anacubeId);
+
+		return removeItem(anacube);
+	}
+
 	public int getTotalPotionCount()
 	{
-		return mPotionBag.size();
+		return mHealthPotions.size();
 	}
 
-	public int getPotionCount()
+	public boolean removeItem(IHealthPotion healthPotion)
 	{
-		return calculateCount(mPotionBag, ItemIds.Potion);
-	}
-
-	public int getGreatPotionCount()
-	{
-		return calculateCount(mPotionBag, ItemIds.Great_Potion);
-	}
-
-	public int getUltraPotionCount()
-	{
-		return calculateCount(mPotionBag, ItemIds.Ultra_Potion);
-	}
-
-	public int getMasterPotionCount()
-	{
-		return calculateCount(mPotionBag, ItemIds.Master_Potion);
-	}
-
-	public int getAnacubeCount(ItemIds toCount)
-	{
-		return calculateAnacubeCount(mAnacubeBag, toCount);
-	}
-
-	private int calculateCount(ArrayList<IHealthPotion> bag, ItemIds toCount)
-	{
-		int count = 0;
-
-		for(IHealthPotion iItem : bag)
+		if(healthPotion == null)
 		{
-			if(iItem.getItemId() == toCount)
-				count++;
+			throw new IllegalArgumentException("Passed value \"healthPotion\" was null.");
 		}
 
-		return count;
+		return mHealthPotions.remove(healthPotion);
 	}
 
-	private int calculateAnacubeCount(ArrayList<Anacube> bag, ItemIds toCount)
+	public boolean removeItem(Anacube anacube)
 	{
-		int count = 0;
-
-		for(Anacube anacube : bag)
+		if(anacube == null)
 		{
-			if(anacube.getItemId() == toCount)
-			{
-				count++;
-			}
+			throw new IllegalArgumentException("Passed value \"anacube\" was null.");
 		}
 
-		return count;
+		return mAnacubes.remove(anacube);
+	}
+
+	public int getHealthPotionCount(HealthPotionId healthPotionId)
+	{
+		IHealthPotion healthPotion = HealthPotionPool.getHealthPotion(healthPotionId);
+
+		int healthPotionCount = 0;
+		for(IHealthPotion healthPotionInList : getHealthPotions())
+		{
+			if(healthPotionInList.equals(healthPotion))
+				healthPotionCount++;
+		}
+
+		return healthPotionCount;
+	}
+
+	public int getAnacubeCount(AnacubeId anacubeId)
+	{
+		Anacube anacube = AnacubePool.getAnacube(anacubeId);
+
+		int anacubeCount = 0;
+		for(Anacube anacubeInList : getAnacubes())
+		{
+			if(anacubeInList.equals(anacube))
+				anacubeCount++;
+		}
+
+		return anacubeCount;
 	}
 }

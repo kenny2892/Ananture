@@ -14,7 +14,6 @@ import application.enums.TypeEffectiveness;
 import application.interfaces.IAI;
 import application.interfaces.IHealthPotion;
 import application.interfaces.IMove;
-import application.pools.ItemPool;
 import application.trainers.ai.choice_objects.AiMoveChoice;
 
 class AI implements IAI, Serializable
@@ -101,9 +100,9 @@ class AI implements IAI, Serializable
 	}
 
 	@Override
-	public IHealthPotion healthPotionToUse(ArrayList<IHealthPotion> healthPotionBases, Anature currentAnature)
+	public IHealthPotion healthPotionToUse(ArrayList<IHealthPotion> healthPotions, Anature currentAnature)
 	{
-		if(healthPotionBases == null)
+		if(healthPotions == null)
 		{
 			LoggerController.logEvent(LoggingTypes.Error,
 					"IllegalArgumentException in BaseAI.java, Method: healthPotionToUse(ArrayList<HealthPotion> healthPotions, Anature currentAnature), \"healthPotions\" value was null.");
@@ -120,9 +119,9 @@ class AI implements IAI, Serializable
 		IHealthPotion healthPotionToUse = null;
 		double anaturePercentAfterItemUse = 0;
 
-		for(IHealthPotion healthPotionBase : healthPotionBases)
+		for(IHealthPotion healthPotion : healthPotions)
 		{
-			int itemHealAmount = ItemPool.getHealthPotion(healthPotionBase.getItemId()).getHealAmount();
+			int itemHealAmount = healthPotion.getHealAmount();
 			double healPercent = itemHealAmount / currentAnature.getStats().getTotalStat(Stat.HitPoints);
 
 			double anatureHpPercentIfItemUsed = currentAnatureHpPercent + healPercent;
@@ -134,7 +133,7 @@ class AI implements IAI, Serializable
 			if(anaturePercentAfterItemUse == 0 || anatureHpPercentIfItemUsed > anaturePercentAfterItemUse && !willOverheal)
 			{
 				anaturePercentAfterItemUse = anatureHpPercentIfItemUsed;
-				healthPotionToUse = healthPotionBase;
+				healthPotionToUse = healthPotion;
 			}
 		}
 

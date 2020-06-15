@@ -4,10 +4,9 @@ import java.io.Serializable;
 
 import application.anatures.Anature;
 import application.controllers.results.ItemResult;
-import application.enums.ItemIds;
 import application.interfaces.IHealthPotion;
 
-public class HealthPotionBase extends ItemBase implements IHealthPotion, Serializable
+public class HealthPotionBase extends Item implements IHealthPotion, Serializable
 {
 	private static final long serialVersionUID = 287737002500225848L;
 
@@ -57,10 +56,6 @@ public class HealthPotionBase extends ItemBase implements IHealthPotion, Seriali
 
 	boolean canCreate()
 	{
-		if(getItemId().equals(ItemIds.Null))
-		{
-			throw new IllegalStateException("The \"itemId\" variable was never set during construction.");
-		}
 
 		if(getItemName().isEmpty())
 		{

@@ -2,7 +2,6 @@ package application.items;
 
 import java.io.Serializable;
 
-import application.enums.ItemIds;
 import application.interfaces.IBuilder;
 
 public class HealthPotion implements IBuilder<HealthPotionBase>, Serializable
@@ -19,12 +18,6 @@ public class HealthPotion implements IBuilder<HealthPotionBase>, Serializable
 	/*
 	 * PUBLIC SETS
 	 */
-
-	public HealthPotion withItemId(ItemIds itemId)
-	{
-		mHealthPotion.setItemId(itemId);
-		return this;
-	}
 
 	public HealthPotion withItemName(String itemName)
 	{

@@ -10,6 +10,8 @@ import application.interfaces.IAbility;
 
 public class AnatureTestable extends Anature
 {
+	private static final long serialVersionUID = -1583535198019114294L;
+
 	public AnatureTestable(AnatureVariables context)
 	{
 		super(context);

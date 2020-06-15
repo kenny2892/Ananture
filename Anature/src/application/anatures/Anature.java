@@ -109,11 +109,6 @@ public class Anature implements Serializable
 			throw new IllegalArgumentException("Passed value \"species\" was null.");
 		}
 
-		if(species.equals(Species.NotSet))
-		{
-			throw new IllegalArgumentException("Passed value \"species\" was equal to " + species.toString() + ".");
-		}
-
 		mSpecies = species;
 
 		return this;
