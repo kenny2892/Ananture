@@ -15,7 +15,7 @@ public class DecreaseStats extends Move
 	
 	public DecreaseStats(boolean applyToTarget, Stat... statsToLower)
 	{
-		if(statsToLower != null)
+		if(statsToLower == null)
 		{
 			LoggerController.logEvent(LoggingTypes.Error, "LowerStats move was passed null stats.");
 			return;

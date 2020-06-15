@@ -15,7 +15,7 @@ public class IncreaseStats extends Move
 
 	public IncreaseStats(boolean applyToTarget, Stat... statsToIncrease)
 	{
-		if(statsToIncrease != null)
+		if(statsToIncrease == null)
 		{
 			LoggerController.logEvent(LoggingTypes.Error, "IncreaseStats move was passed null stats.");
 			return;
